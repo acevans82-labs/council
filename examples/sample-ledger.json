@@ -1,0 +1,486 @@
+{
+  "effort": {
+    "slug": "sample",
+    "name": "Sample Co",
+    "legal_entity": "Illustrative platform company (fictional)",
+    "description": "Fictional benefits-administration platform used to illustrate the dashboard",
+    "principal_role": "principal",
+    "round_type": "initial",
+    "round_id": "r1-20260923",
+    "date": "2026-09-23",
+    "trigger": "initial assessment",
+    "prior_run": {
+      "round_id": null,
+      "mode": "none"
+    },
+    "supplied_documents": [
+      {
+        "name": "Board deck Q2 2026",
+        "type": "board_deck",
+        "received": "2026-09-23"
+      }
+    ],
+    "noun": "company",
+    "bench": "board-director",
+    "bench_name": "Board director",
+    "round_number": 1
+  },
+  "chair": {
+    "persona_id": "chair",
+    "competence": "High",
+    "rationale": "Employer benefits administration sold through resellers and platform partners; core sector."
+  },
+  "roster": [
+    {
+      "persona_id": "financial",
+      "name": "Financial & Unit Economics",
+      "layer": "analyst",
+      "competence": "High",
+      "rationale": "Board deck supplies financials."
+    },
+    {
+      "persona_id": "market-competitive",
+      "name": "Market & Competitive",
+      "layer": "analyst",
+      "competence": "Moderate",
+      "rationale": "Only vendor-published sizing exists."
+    },
+    {
+      "persona_id": "regulatory-policy",
+      "name": "Regulatory & Policy",
+      "layer": "analyst",
+      "competence": "High",
+      "rationale": "Federal rules well documented."
+    },
+    {
+      "persona_id": "channel-partner",
+      "name": "Channel partner",
+      "layer": "stakeholder",
+      "competence": "High",
+      "rationale": "Reseller commentary and partner announcements available.",
+      "view": "The product quotes cleanly and pays on time, which is more than I can say for two of the top three. What worries me is that the company also sells direct to my clients' peers; until that rule is written down, I place the easy cases here and the strategic ones elsewhere."
+    },
+    {
+      "persona_id": "key-partner",
+      "name": "Key partner",
+      "layer": "stakeholder",
+      "competence": "Moderate",
+      "rationale": "Platform partner statements on the category are indirect.",
+      "view": "For my individual line this is a growth source I do not have to pay for, so I want the enrollment feed clean and the premium on time. For my small-group line it is a leak. I will partner where it grows individual and quietly resist where it cannibalizes group."
+    },
+    {
+      "persona_id": "adversary",
+      "name": "Adversary",
+      "layer": "redteam",
+      "competence": "High",
+      "rationale": "Named incumbent with public footprint."
+    },
+    {
+      "persona_id": "evidence-auditor",
+      "name": "Evidence Auditor",
+      "layer": "redteam",
+      "competence": "High",
+      "rationale": "Standard audit."
+    }
+  ],
+  "phases": [
+    {
+      "n": 1,
+      "purpose": "Analysts establish the facts",
+      "personas": [
+        "financial",
+        "market-competitive",
+        "regulatory-policy"
+      ],
+      "summary": "Financial confirmed recurring per-employer revenue from the board deck but found that the plan assumes partner-channel growth the company has not yet delivered. Market & Competitive could not corroborate the market-size figure in the deck from any third party and recorded a gap. Regulatory & Policy found that the individual-market pending federal rule pending this quarter is load-bearing for the employee-side economics.",
+      "notable": [
+        "The partner-channel assumption and the pending federal rule together account for most of the plan's growth.",
+        "Only vendor-published market sizing exists for the sub-segment."
+      ]
+    },
+    {
+      "n": 2,
+      "purpose": "Stakeholders react",
+      "personas": [
+        "channel-partner",
+        "key-partner"
+      ],
+      "summary": "The Channel partner rated the product well on operations but named channel conflict as the reason it withholds strategic accounts, contesting Financial's partner-growth assumption. The Key partner split by line of business: partner for individual, resist for small group.",
+      "notable": [
+        "Channel conflict surfaced independently from two seats."
+      ]
+    },
+    {
+      "n": 3,
+      "purpose": "Red team",
+      "personas": [
+        "adversary",
+        "evidence-auditor"
+      ],
+      "summary": "The Adversary's most credible move was a white-label offer to the company's two largest platform partners within twelve months. The Evidence Auditor downgraded the market-size finding to open and asked the principal to supply the deck's source.",
+      "notable": [
+        "Auditor downgrade widened the confidence band by three points."
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "E-001",
+      "claim": "Recurring revenue per employer group, FY2025 and H1 2026, per board deck.",
+      "source_tier": "T1",
+      "reliability": "B",
+      "locator": "Board deck Q2 2026, p.7",
+      "retrieved": "2026-09-23T14:02Z",
+      "recorded_by": "financial",
+      "carried_from": null,
+      "reverified": null,
+      "supersedes": null
+    },
+    {
+      "id": "E-002",
+      "claim": "Plan assumes partner-channel enrollments triple in FY2027.",
+      "source_tier": "T1",
+      "reliability": "C",
+      "locator": "Board deck Q2 2026, p.14",
+      "retrieved": "2026-09-23T14:10Z",
+      "recorded_by": "financial",
+      "carried_from": null,
+      "reverified": null,
+      "supersedes": null
+    },
+    {
+      "id": "E-003",
+      "claim": "Sub-segment market size figure cited in the deck appears only in a vendor report.",
+      "source_tier": "T3",
+      "reliability": "C",
+      "locator": "https://example.com/vendor-report",
+      "retrieved": "2026-09-23T14:40Z",
+      "recorded_by": "market-competitive",
+      "carried_from": null,
+      "reverified": null,
+      "supersedes": null
+    },
+    {
+      "id": "E-004",
+      "claim": "Individual-market pending federal rule pending; agency statement dated 2026-08-15.",
+      "source_tier": "T2",
+      "reliability": "A",
+      "locator": "Federal Register notice 2026-08-15",
+      "retrieved": "2026-09-23T15:05Z",
+      "recorded_by": "regulatory-policy",
+      "carried_from": null,
+      "reverified": null,
+      "supersedes": null
+    },
+    {
+      "id": "E-005",
+      "claim": "Three reseller forum threads in 2026 cite direct sales by the company as a reason to withhold accounts.",
+      "source_tier": "T3",
+      "reliability": "B",
+      "locator": "https://example.com/reseller-forum",
+      "retrieved": "2026-09-23T16:00Z",
+      "recorded_by": "channel-partner",
+      "carried_from": null,
+      "reverified": null,
+      "supersedes": null
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "persona": "financial",
+      "phase": 1,
+      "statement": "The FY2027 plan depends on partner-channel enrollments tripling; the company has not yet shown partner-channel growth at that rate.",
+      "confidence": "High",
+      "evidence_strength": "Corroborated",
+      "evidence_ids": [
+        "E-001",
+        "E-002"
+      ],
+      "status": "headline",
+      "contested_by": [
+        {
+          "persona": "channel-partner",
+          "note": "Partners will not scale while the company sells direct against them."
+        }
+      ],
+      "so_what": "Growth runway rests on a channel the company is currently in conflict with.",
+      "driver": "runway"
+    },
+    {
+      "id": "F-002",
+      "persona": "market-competitive",
+      "phase": 1,
+      "statement": "The market-size figure in the board deck cannot be corroborated outside a single vendor report.",
+      "confidence": "Moderate",
+      "evidence_strength": "Single-source",
+      "evidence_ids": [
+        "E-003"
+      ],
+      "status": "open",
+      "contested_by": [],
+      "so_what": "Share claims are unverifiable until a bottom-up sizing exists.",
+      "driver": "standing"
+    },
+    {
+      "id": "F-003",
+      "persona": "regulatory-policy",
+      "phase": 1,
+      "statement": "A pending federal pending federal rule determines whether employee-side economics hold for the lower-wage segment the plan targets.",
+      "confidence": "High",
+      "evidence_strength": "Strong",
+      "evidence_ids": [
+        "E-004"
+      ],
+      "status": "headline",
+      "contested_by": [],
+      "so_what": "Regulatory driver is binary on a dated decision inside the horizon.",
+      "driver": "regulatory"
+    },
+    {
+      "id": "F-004",
+      "persona": "channel-partner",
+      "phase": 2,
+      "statement": "Resellers rate the product well operationally but withhold strategic accounts because the company sells direct to employers.",
+      "confidence": "High",
+      "evidence_strength": "Corroborated",
+      "evidence_ids": [
+        "E-005",
+        "E-002"
+      ],
+      "status": "headline",
+      "contested_by": [],
+      "so_what": "Channel conflict is the largest self-inflicted drag on value proposition.",
+      "driver": "value_proposition",
+      "question": "choose_or_leave"
+    },
+    {
+      "id": "F-005",
+      "persona": "key-partner",
+      "phase": 2,
+      "statement": "Platform partners' individual-market leaders would partner; small-group leaders would resist.",
+      "confidence": "Moderate",
+      "evidence_strength": "Inferred",
+      "evidence_ids": [],
+      "status": "supporting",
+      "contested_by": [],
+      "so_what": "Platform partner relationships will be line-of-business specific.",
+      "driver": "standing",
+      "question": "lands"
+    },
+    {
+      "id": "F-006",
+      "persona": "adversary",
+      "phase": 3,
+      "statement": "As the incumbent, I offer the company's two largest platform partners a white-label deal within twelve months.",
+      "confidence": "High",
+      "evidence_strength": "Corroborated",
+      "evidence_ids": [
+        "E-002",
+        "E-005"
+      ],
+      "status": "headline",
+      "contested_by": [],
+      "so_what": "Undermines F-001's partner-growth path directly.",
+      "driver": "runway"
+    }
+  ],
+  "conflicts": [
+    {
+      "id": "C-001",
+      "description": "Partner-channel growth: plan assumption vs. channel-partner behavior.",
+      "evidence_ids": [
+        "E-002",
+        "E-005"
+      ],
+      "values": [
+        {
+          "source_tier": "T1",
+          "value": "Enrollments triple via partners (plan)"
+        },
+        {
+          "source_tier": "T3",
+          "value": "Resellers withholding strategic accounts"
+        }
+      ],
+      "confidence_real": "High",
+      "likely_cause": "scope",
+      "public_disclosure_relevant": false,
+      "raised_by": "channel-partner",
+      "resolution": null,
+      "resolved_by": "unresolved",
+      "ruling_id": null
+    }
+  ],
+  "rulings": [
+    {
+      "id": "R-001",
+      "phase": 3,
+      "on": "F-002",
+      "decision": "Demoted to open pending the principal supplying the deck's market-size source.",
+      "rationale": "Single T3 source; the Evidence Auditor could not resolve the locator to an independent figure.",
+      "dissent": []
+    }
+  ],
+  "judgment_calls": [
+    {
+      "id": "J-001",
+      "phase": 4,
+      "question": "Should the council treat the direct-to-employer channel as strategic (keep) or as a conflict to be resolved in favor of partners? The score moves roughly six points between the two readings.",
+      "options": [
+        "Direct channel is strategic",
+        "Partners take precedence",
+        "Undecided; council should model both"
+      ],
+      "why_principal": "This is a board strategy choice, not an evidence question.",
+      "type": "judgment",
+      "asked_at": "2026-09-23T18:00Z",
+      "answer": null,
+      "answered_at": null,
+      "impact": null
+    },
+    {
+      "id": "J-002",
+      "phase": 4,
+      "question": "Please supply the source for the market-size figure on p.9 of the board deck.",
+      "options": [],
+      "why_principal": "Only the principal has access to management's source.",
+      "type": "document_request",
+      "asked_at": "2026-09-23T18:00Z",
+      "answer": null,
+      "answered_at": null,
+      "impact": null
+    }
+  ],
+  "handoffs": [
+    {
+      "id": "H-001",
+      "phase": 1,
+      "from": "financial",
+      "to": "channel-partner",
+      "item": "Test whether partners will scale at the rate the plan assumes.",
+      "why": "Financial cannot judge channel intent from the deck.",
+      "status": "answered"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "G-001",
+      "expected": "Independent market sizing for the sub-segment.",
+      "why_expected": "Segment is large enough for analyst coverage.",
+      "searched": [
+        "trade press",
+        "consultant surveys",
+        "public comparables' filings"
+      ],
+      "status": "not_found",
+      "raised_to_principal": true,
+      "principal_could_supply": "Management's source for the deck figure"
+    }
+  ],
+  "open_questions": [
+    {
+      "id": "Q-001",
+      "type": "management",
+      "question": "What is the written rule on which employers the company will and will not sell to directly?",
+      "owner": "management",
+      "linked": [
+        "F-004",
+        "C-001"
+      ]
+    }
+  ],
+  "assessment": {
+    "score": 58,
+    "band": 14,
+    "horizon": "3-5 years",
+    "drivers": [
+      {
+        "name": "Competitive standing",
+        "key": "standing",
+        "weight": 20,
+        "score": 5,
+        "rationale": "Position is real but share is unverifiable (F-002 open).",
+        "finding_ids": [
+          "F-002",
+          "F-005"
+        ]
+      },
+      {
+        "name": "Value proposition strength",
+        "key": "value_proposition",
+        "weight": 20,
+        "score": 6,
+        "rationale": "Operationally strong with channel-partners; channel conflict caps it.",
+        "finding_ids": [
+          "F-004"
+        ]
+      },
+      {
+        "name": "Operating quality and execution",
+        "key": "operating",
+        "weight": 15,
+        "score": 6,
+        "rationale": "Payments and quoting praised; plan delivery unproven.",
+        "finding_ids": [
+          "F-004"
+        ]
+      },
+      {
+        "name": "Growth runway",
+        "key": "runway",
+        "weight": 15,
+        "score": 5,
+        "rationale": "Runway rests on partners the company is in conflict with; incumbent can pre-empt.",
+        "finding_ids": [
+          "F-001",
+          "F-006"
+        ]
+      },
+      {
+        "name": "Regulatory and policy tailwind",
+        "key": "regulatory",
+        "weight": 15,
+        "score": 5,
+        "rationale": "Binary on a dated federal decision.",
+        "finding_ids": [
+          "F-003"
+        ]
+      },
+      {
+        "name": "Capital and exit optionality",
+        "key": "capital",
+        "weight": 15,
+        "score": 7,
+        "rationale": "Consolidating segment with multiple buyer types.",
+        "finding_ids": []
+      }
+    ],
+    "verdict": "Sample Co is a well-run administrator whose growth case is held hostage by its own channel strategy. Channel partners like the product and dislike competing with it; the plan's partner-channel growth will not arrive until that is resolved. The pending pending federal rule sets the ceiling on the lower-wage segment. If the board resolves the channel question in favor of partners and the pending federal rule goes the company's way, the score moves into the high 60s; if neither, into the 40s.",
+    "top_movers": [
+      "F-004 channel conflict",
+      "F-001 partner-growth dependence",
+      "F-003 pending federal rule"
+    ],
+    "biggest_stakeholder_risk": "Channel partner: strategic accounts withheld until the direct-sales rule is written.",
+    "what_would_raise": [
+      "A written channel rule and evidence partners are scaling",
+      "Independent market sizing (principal: supply the deck's source)",
+      "A favorable pending federal rule"
+    ],
+    "confidence_rationale": "One headline demoted; one load-bearing gap open; capital driver rests on fewer than two findings.",
+    "standing_summary": "A credible mid-tier administrator in a consolidating segment; share unverified.",
+    "positioning_summary": "Operationally differentiated with channel-partners; positioning undermined by channel conflict.",
+    "operating_summary": "Strong payments and quoting; plan delivery and partner scaling unproven.",
+    "label": "Probability of value creation over 3–5 years"
+  },
+  "score_history": [
+    {
+      "round_id": "r1-20260923",
+      "date": "2026-09-23",
+      "score": 58,
+      "band": 14,
+      "note": "initial"
+    }
+  ]
+}

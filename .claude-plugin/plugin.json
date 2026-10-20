@@ -1,0 +1,12 @@
+{
+  "name": "council",
+  "version": "1.0.0",
+  "description": "A swarm with seats. A council of AI personas (analysts, stakeholders, a red team and a neutral chair) that deliberates on anything you bring it, round after round, with every claim traced to an evidence ledger. Build a bench for each hat you wear, from a preset or from scratch; add and remove seats in a minute; run locally or as an unattended cloud routine.",
+  "author": {
+    "name": "acevans82-labs"
+  },
+  "keywords": ["council", "swarm", "deliberation", "diligence", "decision", "research", "personas", "red-team", "evidence-ledger", "claude-code"],
+  "commands": "./commands",
+  "agents": "./agents",
+  "skills": "./skills"
+}

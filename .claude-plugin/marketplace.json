@@ -1,0 +1,22 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "council",
+  "metadata": {
+    "description": "Council: a swarm with seats. Multi-persona deliberation with an evidence ledger, for any subject in any field."
+  },
+  "owner": {
+    "name": "acevans82-labs"
+  },
+  "plugins": [
+    {
+      "name": "council",
+      "description": "A council of AI personas, chaired by a neutral chair, that assesses a company, idea, deal, decision, initiative or research question for the person who convenes it. Benches per hat, presets to start from, seats you add or remove in a minute, rounds that pick up where the last one ended, and an evidence ledger behind every claim.",
+      "author": {
+        "name": "acevans82-labs"
+      },
+      "source": "./",
+      "category": "workflow",
+      "tags": ["council", "swarm", "deliberation", "decision", "research", "claude-code"]
+    }
+  ]
+}
