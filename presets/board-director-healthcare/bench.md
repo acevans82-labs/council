@@ -68,6 +68,14 @@ Stakeholder order: management, investor, customer-buyer, end-user, channel-partn
 
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the latest board pack narrative, the most recent quarter's numbers, and the state and program footprint
+deep: the full board deck, financial statements or management accounts for the last eight quarters, the plan, the license and contract list, and any regulator correspondence
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 Treat these as T2. Each persona checks the group for its seat and the "any company" group first; extend `skills/exhaustive-retrieval/references/regulatory-sources.md` when a new business type is added.
 

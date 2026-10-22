@@ -24,8 +24,9 @@ Work through these in order. Skip anything that is already done; say so in a lin
    - <each remaining hat from the interview, so /council-bench can pick them up later>
    ## Cloud
    routine: not set up
+   watch_routine: not set up
    ```
-3. **The first bench.** Pick the hat they want first and run the bench-design interview from `skills/bench-design` (offer the matching presets from `presets/`; a preset is copied to `benches/<slug>/` and then adjusted). Write `bench.md` and `seats/`, add the row to `council.md`, set `active_bench`. Run `python3 scripts/doctor.py` and fix what it reports.
+3. **The first bench.** Pick the hat they want first and run the bench-design interview from `skills/bench-design` (offer the matching presets from `presets/`; a preset is copied to `benches/<slug>/` and then adjusted). Write `bench.md`, `seats/` and `context/` (ask for whatever already exists that every convening should know: an overview, a strategy, a glossary; drop it in and list the rest in `context/README.md`), add the row to `council.md`, set `active_bench`. Run `python3 scripts/doctor.py` and fix what it reports.
 4. **Cloud mode.** Explain in three lines: a round can run here in this session (fine for a first effort; takes a while and the laptop stays open) or as a cloud routine that runs unattended and delivers a pull request. If they want cloud, follow `docs/cloud-setup.md` with them now and record `routine: council-<repo>` under `## Cloud` in `council.md`; otherwise leave `routine: not set up` and move on.
 5. **Close.** Tell them the roster of the first bench in one compact table and the question it answers in one line. Then offer: "Start the first effort with /council-run <name of the thing>", "Add another bench with /council-bench new", or "Change a seat with /council-seat".
 

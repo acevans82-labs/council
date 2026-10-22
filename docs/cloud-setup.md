@@ -21,12 +21,20 @@ Intake never runs in the cloud. You and the session do intake in chat (`/council
 6. **Environment:** the default cloud sandbox is enough. Personas use web search and the browser tools the session provides; no credentials are needed. If a bench's sources sit behind logins, that bench's seats record the gap rather than the fact.
 7. Record it in `council.md` under `## Cloud` as `routine: council-<repo>` so `/council-run` knows to fire it rather than run here.
 
+## Create the watch routine (once per repository, when any effort has a watch)
+Same steps, with these differences: **Name** `council-watch-<repo>`; **Trigger** a schedule, nightly at a quiet hour (the shortest cadence any watch will use; `watch.md` decides per effort whether it is due); **Prompt**:
+```
+Read orchestrator/watch.md in this repository and follow it for this run. Payload: watch all
+```
+Record it in `council.md` under `## Cloud` as `watch_routine: council-watch-<repo>`. The watch opens one pull request per run; quiet runs say so in the title and can be merged or closed unread.
+
 ## Fire a round
 After intake is committed and pushed, "Run now" with the payload:
 ```
 round <bench>/<effort>
 round <bench>/<effort>: <what prompted this round>
 round <bench>/<effort> full
+round <bench>/<effort> standard          — a condensed, scored round (default depth is deep)
 ```
 `/council-run` and `/council-round` print the exact payload for the effort they just prepared. If your session has a routine-trigger tool, they fire it for you.
 

@@ -62,6 +62,14 @@ Stakeholder order: end-user (the person most affected), co-decider, domain-exper
 | evidence-auditor | redteam | high | Grades the evidence, including the stories, the websites and the "everyone says" claims |
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the options written down and the household budget
+deep: the options with their real costs, the offers or documents behind each, any professional assessment, and what the people affected have said
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 T1 is what the principal supplies: the household budget, the offer letter, the school or care information pack, the professional's written assessment, notes from conversations with the people affected. T2 in this field: official statistics and inspection reports (schools, care providers, neighbourhoods, employers); government and public-health guidance; peer-reviewed research on the kind of choice in question; statutes, eligibility rules and official calculators for entitlements; court or tribunal records where relevant. T3: review sites, parent and carer forums, press, estate-agent and provider marketing, a relative's experience. The seat briefs name where each seat starts; the principal should replace the fill-in prompts with the actual school, provider, employer, city or condition.
 
