@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 — 2026-10-22
+- **Engine and workspace are separate.** This repository is now the engine only; data lives in a workspace made from the `council-workspace` template with the engine mounted as a git submodule pinned to a release. Why: a template copy could never pull upstream without merging the owner's benches, so no update could ever be offered. Now the engine is read-only for everyone but its maintainers and every workspace updates by moving one pointer.
+- **Update check.** `scripts/check_update.py` compares the pinned engine to the latest tag, prints the release notes between, and supports `--apply` and a 3-day `--snooze` (`~/.claude/council/update-snooze`). The workspace `CLAUDE.md` runs it once per thread and offers Update now / Skip / Remind me in 3 days, mirroring NDLC.
+- **Doctor** finds the workspace from the current directory, checks the submodule, diffs the workspace `CLAUDE.md` against the engine template, and reports an available or snoozed update.
+- `templates/workspace/` holds the files a workspace is born with. Cloud routine prompts now fetch the submodule first.
+
 ## 1.1.0 — 2026-10-21
 - **Depth profiles.** "Consult the council" at quick, standard or deep (`skills/convening`, `/council-consult`); quick writes a cited memo and no ledger; guest seats for one convening.
 - **Materials gate and context folder.** Each bench declares what material each depth needs; every convening says cleared, downgraded or blind. `context/` is read first at every depth.

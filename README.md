@@ -4,18 +4,23 @@
 
 You wear several hats. Each hat gets a **bench**: a board member's bench, a founder's bench, a head-of-regulatory bench, a parent's bench. Each bench has the seats that hat needs and a question it answers with a score. Each thing a bench works on is an **effort**. Each pass of the council on an effort is a **round**, and round N picks up exactly where round N-1 left off: the council tells you what it needs from you, you answer what you can, and it carries the rest forward.
 
-## Install in five minutes
+## Engine and workspace
+This repository is the **engine**: personas, skills, commands, scripts, orchestrators, presets. It is versioned by tag and read-only for everyone but its maintainers. Your data lives in a **workspace** of your own, created from the [council-workspace](https://github.com/acevans82-labs/council-workspace) template, with this engine mounted at `engine/` and pinned to a release. You update the engine; you never edit it.
 
-1. **Make your own copy.** Click **Use this template** on GitHub (private is fine), then clone it:
+## Install in five minutes
+1. **Make your workspace.**
    ```bash
-   gh repo create my-council --template acevans82-labs/council --private --clone
+   gh repo create my-council --template acevans82-labs/council-workspace --private --clone
+   cd my-council && git submodule update --init
    ```
-   Or just `git clone` this repository.
-2. **Open it in Claude Code** and say "set up my council". There is nothing to install: `CLAUDE.md` routes plain words to the commands. (If you prefer slash commands, install it as a plugin: `claude plugin marketplace add acevans82-labs/council` then `claude plugin install council@council`.)
+2. **Open it in Claude Code** and say "set up my council". Nothing else to install: the workspace's `CLAUDE.md` routes plain words to the engine's commands. (Slash commands, optional: `claude plugin marketplace add acevans82-labs/council` then `claude plugin install council@council`.)
 3. **Answer the setup questions**: who you are, which hats you wear, which one to bench first. Setup offers a preset that matches and adjusts it with you.
 4. **Bring the first effort**: "run the council on Acme" or "vet this idea". Intake is one batch of questions; then the council runs. For a quick answer, "consult the council on X" gives a cited memo in minutes.
 
-Python 3.9+ is the only requirement; the two scripts use the standard library.
+Python 3.9+ is the only requirement; the scripts use the standard library.
+
+## Staying current
+When a new engine release exists, the next thread you open in your workspace says so, shows the release notes, and offers **Update now**, **Skip** or **Remind me in 3 days**. Updating moves the `engine/` pointer; your benches are never touched. By hand: `python3 engine/scripts/check_update.py --apply`.
 
 ## What a round produces
 - **A score** (0–100 with a confidence band) against the question your bench asks, with the three findings that moved it.
@@ -76,14 +81,18 @@ Locally, the chair dispatches every seat as a subagent in your session and you w
 
 ## How it is built
 ```
+[workspace]
 council.md                    you and your benches (created by setup)
 benches/<bench>/              bench.md, seats/, context/, efforts/<effort>/{brief.md, documents/, ledger.json, rounds/, consults/, watch.md, assessments/, dashboards/}
+engine/                       this repository, as a submodule pinned to a release
+[engine]
 presets/<preset>/             bench.md + seats/
 agents/                       persona charters, _template.md
 skills/                       the rules: protocols, evidence ledger, retrieval, conflicts, rebuttal, scoring, outputs, dashboard, intake, bench design, seat authoring, convening (depth), standing watch
 commands/                     the slash commands
 orchestrator/                 orchestrate.md (a round in the cloud), watch.md (the scheduled watch)
-scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py, build_effort_index.py
+scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py, build_effort_index.py, check_update.py
+templates/workspace/          the files a workspace is born with (CLAUDE.md, AGENTS.md, README, .gitignore)
 docs/suite-integration.md     how the council will plug into BDLC and NDLC (planned, not wired)
 skills/council-ledger/        build_dashboard.py and the HTML template
 ```

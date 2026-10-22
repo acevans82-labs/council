@@ -5,7 +5,7 @@ A round can run in your Claude Code session (the chair dispatches every seat as 
 Intake never runs in the cloud. You and the session do intake in chat (`/council-run` or `/council-round`), the brief and documents are committed and pushed, and then the routine is fired with a one-line payload.
 
 ## What you need
-- This repository on GitHub (private is fine; the template is public, your copy need not be).
+- Your council workspace on GitHub (private is fine). The engine submodule points at the public engine, so the cloud session can fetch it without credentials. The engine version a cloud round uses is the one pinned in your workspace.
 - Claude Code cloud access on your account, with the GitHub app installed on the repository.
 - `gh` logged in locally (`gh auth status`).
 
@@ -16,15 +16,16 @@ Intake never runs in the cloud. You and the session do intake in chat (`/council
 4. **Trigger:** manual ("Run now") and the API trigger. No schedule; a council round fires when intake is done.
 5. **Prompt:** paste exactly:
    ```
-   Read orchestrator/orchestrate.md in this repository and follow it for this run. The payload is in the fire payload or the Run-now text.
+   Run `git submodule update --init --recursive`, then read AGENTS.md and engine/orchestrator/orchestrate.md in this repository and follow them for this run. The payload is in the fire payload or the Run-now text.
    ```
+   (In the engine repository itself, with data at its root, drop the submodule step and read `orchestrator/orchestrate.md`.)
 6. **Environment:** the default cloud sandbox is enough. Personas use web search and the browser tools the session provides; no credentials are needed. If a bench's sources sit behind logins, that bench's seats record the gap rather than the fact.
 7. Record it in `council.md` under `## Cloud` as `routine: council-<repo>` so `/council-run` knows to fire it rather than run here.
 
 ## Create the watch routine (once per repository, when any effort has a watch)
 Same steps, with these differences: **Name** `council-watch-<repo>`; **Trigger** a schedule, nightly at a quiet hour (the shortest cadence any watch will use; `watch.md` decides per effort whether it is due); **Prompt**:
 ```
-Read orchestrator/watch.md in this repository and follow it for this run. Payload: watch all
+Run `git submodule update --init --recursive`, then read AGENTS.md and engine/orchestrator/watch.md in this repository and follow them. Payload: watch all
 ```
 Record it in `council.md` under `## Cloud` as `watch_routine: council-watch-<repo>`. The watch opens one pull request per run; quiet runs say so in the title and can be merged or closed unread.
 
