@@ -68,6 +68,14 @@ Stakeholder order: management (the sponsor and leadership), employee (the delive
 | evidence-auditor | redteam | high | Grades the plan's claims, the value case and the buy-in evidence |
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the initiative's one-page objective and the budget or resource ask
+deep: the full plan with dates and owners, the budget, the vendor or technical proposals, and the compliance or risk assessment done so far
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 T1 is what the principal supplies: the initiative charter, the plan, the budget request, the sponsor's brief, prior status reports, internal policies, vendor proposals. T2 in this field: the function's primary regulator or standards body and its guidance; statutes and rules the initiative touches; peer-reviewed and official research on the approach; industry standards; the organization's own audited numbers where supplied. T3: vendor material, analyst reports, conference talks, peer case studies, practitioner forums. Replace the fill-in prompts in the seat briefs with the regulator, standards and vendors of the actual function.
 

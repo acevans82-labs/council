@@ -63,6 +63,14 @@ Stakeholder order: investor, management, counterparty, customer-buyer, key-partn
 
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the teaser or summary, the headline terms, and the latest numbers on the asset
+deep: the full data-room index with the financials, the draft terms or term sheet, the contracts with change-of-control clauses, and the valuation work done so far
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 Treat as T2 in any sector: securities filings and the company registry for the jurisdiction (SEC EDGAR, Companies House or the national equivalent) for the target, the counterparty and comparables; merger-control filings and decisions (HSR notices, the competition authority's case register); foreign-investment review decisions where published; court dockets and regulator enforcement databases; the register of whichever licences the asset must hold; transaction press, funding databases and acquirers' investor presentations for precedents; procurement records where the asset sells to government. The data room, the information memorandum, the quality-of-earnings report and management presentations are T1 for what the seller claims and are recorded as seller-sourced. Add the sector's own list by extending `skills/exhaustive-retrieval/references/regulatory-sources.md`.
 

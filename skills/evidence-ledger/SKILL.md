@@ -12,13 +12,15 @@ description: "The shared fact ledger for a council round, stored in the effort f
 **Every fact gets an evidence record before it is used.** Write the `E-` record with source, tier, reliability, locator and timestamp, then cite it in the finding. No orphan claims.
 
 **Source tier is fixed at record time.**
-- `T1` principal-supplied: documents the principal provides (decks, plans, financials, contracts, notes, prior analyses), facts the principal confirms at intake, and the principal's written answers between rounds. Locator is the document name and page or section, or "intake, confirmed by principal", or "principal answer, round N".
+- `T1` principal-supplied: documents the principal provides (decks, plans, financials, contracts, notes, prior analyses), the bench's `context/` folder, facts the principal confirms at intake, and the principal's written answers between rounds. Locator is the document name and page or section, "context: <file>, <section>", "intake, confirmed by principal", or "principal answer, round N".
 - `T2` primary public sources: regulators and registers, filings, court records, statutes and rules, official statistics, peer-reviewed research, standards bodies, procurement records.
 - `T3` third party: press, analyst and vendor reports, comparison sites, websites, reviews, job postings, funding databases, conference material, forums.
 
 The bench's `bench.md` may name which sources count as T2 in its field. When it is silent, use the definitions above.
 
 **Reliability grade** is separate from tier: `A` primary document, `B` reputable secondary, `C` single unverified source, `D` inferred or modeled. An assertion in a supplied deck is T1 but `C` until corroborated.
+
+**Show the math.** A figure the persona computed or modeled (reliability `D`, or any derived number) carries a `calc` field: the inputs by evidence ID, the formula in words or symbols, and the assumptions, so a reader can redo it. No `calc`, no derived number.
 
 **Locator and timestamp are mandatory.** URL for web, filing type and date for registers, document name and page for supplied files. If you cannot say where it came from, do not record it.
 
@@ -33,6 +35,9 @@ The bench's `bench.md` may name which sources count as T2 in its field. When it 
 **Every principal-facing ask gets a priority tier.** Every `J-` record, every `G-` record with `raised_to_principal: true`, and every unresolved `C-` record carries a `tier` (0 must-have, 1 high-value, 2 useful, 3 nice-to-have) set by the chair at synthesis. Tier by leverage against this round's actual decisions and deadlines, never to hit a target count. Full definitions in `skills/council-ledger`.
 
 **Effort isolation.** A round reads and writes only its own effort folder. Never cite an evidence record from another effort's ledger, on this bench or any other. Public facts that apply to more than one effort are retrieved and recorded again in each.
+
+## Consults do not write here
+A quick consult (`skills/convening`) reads the ledger and writes a memo. Its inline citations enter the ledger only when the consult is promoted into a round, at that round's intake.
 
 ## Carry-forward on a later round
 

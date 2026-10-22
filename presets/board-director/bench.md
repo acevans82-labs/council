@@ -67,6 +67,14 @@ Stakeholder order: management, investor, customer-buyer, end-user, channel-partn
 
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the latest management summary or board pack narrative, and the most recent quarter's numbers
+deep: the full board deck, financial statements or management accounts for the last eight quarters, the plan, and the major contracts or their summaries
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 Field-free until the principal fills in the industry. Treat as T2 in any industry: the company registry and securities filings for the jurisdiction (SEC EDGAR, Companies House or the national equivalent); the register of whichever licences the business must hold; court dockets and regulator enforcement databases; official statistics for the segment; trade-association data; public procurement records; complaint datasets held by regulators or ombudsmen; patent and trademark registers. Add the industry's own list by extending `skills/exhaustive-retrieval/references/regulatory-sources.md` with a section for this field, and name the specific registers in each seat brief's Starting points.
 

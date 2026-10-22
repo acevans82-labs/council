@@ -8,6 +8,7 @@ The `<routine-fire-payload>` block (or Run-now text) names the work. Act on it; 
     round <bench>/<effort>                 — next round of this effort (round 1 if none exists)
     round <bench>/<effort>: <trigger>      — next round, with the trigger in words
     round <bench>/<effort> full            — next round, every seat re-run
+    round <bench>/<effort> standard        — next round at the standard depth (default: deep); see skills/convening
 
 If the payload is missing, malformed, names a bench with no `benches/<bench>/bench.md`, or names an effort with no `benches/<bench>/efforts/<effort>/brief.md`: do not guess and do not interview anyone. Create the branch, write `benches/<bench>/efforts/<effort>/rounds/<round_id>/BLOCKED.md` saying exactly what is missing (intake happens in chat with the principal before a round is fired), commit, open a PR titled "BLOCKED: <bench>/<effort> <round_id>", and stop.
 
@@ -15,7 +16,7 @@ If the payload is missing, malformed, names a bench with no `benches/<bench>/ben
 - `round_number`: one more than the highest round in `score-history.json` (1 if none). `round_id`: `r<N>-<YYYYMMDD>` (append `-2` if it exists).
 - Branch: `claude/round-<bench>-<effort>-<round_id>` from the default branch.
 - Round 1: read `brief.md`, create `ledger.json`. Round 2+: the brief's newest "Round N answers" section is the intake; archive the prior ledger to `rounds/<prior_round_id>/ledger.json`, apply carry-forward and write the answers into the carried `J-` records and as T1 evidence per `skills/intake` and `skills/evidence-ledger`. If the brief has no answers section for this round and the payload gave no trigger, treat it as "refresh" and note it in the phases minutes.
-- Read `benches/<bench>/bench.md` and every file in `benches/<bench>/seats/`.
+- Read `benches/<bench>/bench.md`, the bench's `context/` folder, and every file in `benches/<bench>/seats/`. Apply the materials gate per `skills/intake` (unattended: a missing item downgrades the depth unless the brief records that the principal chose blind) and record the result in the ledger's `effort` block.
 
 ## 3. Phases, in order
 Dispatch personas as subagents, each with its own context. Every dispatch passes: bench slug, effort slug, round ID, effort folder path, persona ID, the seat-brief path, the charter path (`agents/<id>.md`, or the seat brief itself for `persona: custom`), and any specific instruction (`adversary_identity` for the Adversary, handoffs to answer, rebuttal inputs). Every persona follows `skills/persona-protocol` (stakeholders also `skills/stakeholder-protocol`) and writes exactly one file to `benches/<bench>/efforts/<effort>/rounds/<round_id>/` with temp IDs. After each phase, merge:
@@ -36,7 +37,7 @@ Phase order (scoped later rounds: only the seats the trigger and answers touch, 
 6. **Rebuttal** (parallel, rostered stakeholders) unless the bench says `rebuttal: off`.
 7. **Answer pass** (round 1; later rounds only if open challenges exist).
 8. **Evidence Auditor** (alone, last).
-9. **Synthesis** (chair): tier, score per `skills/scoring`, `exec_summary`, outputs per `skills/assessment-output` and `skills/council-ledger` (build the dashboard with `python3 skills/council-ledger/scripts/build_dashboard.py`), append `score-history.json`, commit.
+9. **Synthesis** (chair): tier, score per `skills/scoring`, `exec_summary`, outputs per `skills/assessment-output` and `skills/council-ledger` (build the dashboard with `python3 skills/council-ledger/scripts/build_dashboard.py`, passing `--prior rounds/<prior_round_id>/ledger.json` on round 2+, then `python3 scripts/build_effort_index.py` on the effort folder), append `score-history.json`, commit.
 
 ## 4. Close
 Open a pull request to the default branch titled `Council round: <bench>/<effort> <round_id> — score <score> (±<band>)`. Body: the score label, the score and one-paragraph verdict, movement since the last round if any, links to the assessment, principal-requests and dashboard files, and the full numbered "What the council needs from the principal" list. That PR is the round's deliverable; the principal reads it first and answers its requests at the next round's intake.

@@ -67,6 +67,14 @@ Stakeholder order: management (the pitch as the founder would make it), customer
 | evidence-auditor | redteam | high | Grades every load-bearing claim; the pitch is the easiest place for fiction |
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the pitch or one-pager, the current model or budget, and any customer evidence so far
+deep: the deck, the model, every customer conversation or pilot record, the cap table or funding plan, and the technical plan
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 T1 is what the founder supplies: the deck, the model, interview notes, pilot data, letters of intent, the cap table. T2 in this field: company and charity registers; patent and trademark offices; the primary regulator's registers and guidance; official statistics on the market's size and the buyers' numbers; peer-reviewed or official studies of the problem; procurement and tender records where the buyer is public; standards bodies. T3: funding databases, press, review sites, app stores, job postings, rival websites and pricing pages, founder forums. The seat briefs name where each seat starts; the principal should replace the fill-in prompts with the registers and rivals of the actual field.
 

@@ -52,9 +52,22 @@ Nothing in `ledger.json` should contain a stray ID-shaped string that is not a r
 
 ## Build
 ```bash
+# round 1
 python3 skills/council-ledger/scripts/build_dashboard.py benches/<bench>/efforts/<effort>/ledger.json benches/<bench>/efforts/<effort>/dashboards/<round_id>-council-ledger.html
+# round 2 and later: pass the prior round's archived ledger so the dashboard can show what changed
+python3 skills/council-ledger/scripts/build_dashboard.py benches/<bench>/efforts/<effort>/ledger.json benches/<bench>/efforts/<effort>/dashboards/<round_id>-council-ledger.html --prior benches/<bench>/efforts/<effort>/rounds/<prior_round_id>/ledger.json
+# every round: refresh the effort's index of rounds
+python3 scripts/build_effort_index.py benches/<bench>/efforts/<effort>
 ```
-Standalone HTML, no dependencies beyond web fonts with system fallbacks. Send the file to the principal.
+Standalone HTML, no dependencies beyond web fonts with system fallbacks. Send the round's dashboard to the principal; the index is the place to find every earlier one.
+
+## Dashboards on demand: history and changes
+Every round keeps its own dashboard under `dashboards/`; nothing is overwritten. With `--prior`, the builder computes the change set and the dashboard gets:
+- a **Changes** toggle in the header (on by default) that shows or hides everything below;
+- a **What changed** block at the top of the executive and narrative views: score and band movement, drivers that moved, requests answered, gaps closed, conflicts resolved, headlines demoted, counts of new and changed records, and a link to the prior round's dashboard;
+- **row marks** in every Audit table (green for new this round, amber for a carried record that changed) and a badge in the record drawer;
+- the meta line shows the round's depth and, when not cleared, the materials-gate result.
+`dashboards/index.html` (from `scripts/build_effort_index.py`) lists every round with score, movement and links, plus consults and watch briefs. The written assessment's redline is git's: `git log -p -- benches/<bench>/efforts/<effort>/assessments/`.
 
 ## What the principal should see in under a minute
 - The score, its band, and the three things that moved it.

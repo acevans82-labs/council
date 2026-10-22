@@ -10,8 +10,10 @@ The slash commands in `commands/` work when this repo is installed as a plugin, 
 | "set up", "get started", "who am I to this thing", first message in a fresh clone | `commands/council-setup.md` |
 | "new bench", "switch to my founder hat", "list benches", "edit the bench" | `commands/council-bench.md` |
 | "add a seat", "remove the union seat", "what personas are there", "edit the regulator's brief" | `commands/council-seat.md` |
+| "consult the council on X", "quick question for the council", "what does the bench think about X" | `commands/council-consult.md` (quick by default; "standard" or "deep" in the ask changes it) |
 | "run the council on X", "assess X", "start an effort", "vet this idea" | `commands/council-run.md` |
 | "next round on X", "round 2", "here are my answers", "update X, a new deck arrived" | `commands/council-round.md` |
+| "watch X for me", "keep an eye on X", "turn off the watch", "what has the watch found" | `commands/council-watch.md` |
 | "status", "where are we", "what's open" | `commands/council-status.md` |
 | "check the setup", "something looks off", "doctor" | `commands/council-doctor.md` |
 
@@ -22,12 +24,13 @@ If `council.md` does not exist yet, every path starts with setup.
 council.md                    the principal and the bench index (created by setup)
 benches/<bench>/bench.md      one hat: role, field, question, scoring frame, roster index
 benches/<bench>/seats/*.md    the roster: one seat brief per persona (file stem = seat ID)
-benches/<bench>/efforts/<effort>/   brief, documents, ledger.json, rounds/, assessments/, dashboards/
+benches/<bench>/context/      standing material every convening reads first (the bench's "training")
+benches/<bench>/efforts/<effort>/   brief, documents, ledger.json, rounds/, consults/, watch.md, assessments/, dashboards/
 presets/<preset>/             ready-made benches to copy and adjust
 agents/                       the persona library (generic charters) and _template.md
 skills/                       the rules of the council: protocols, ledger, scoring, outputs, design
 commands/                     the slash commands above
-orchestrator/orchestrate.md   how a cloud routine runs a round unattended
+orchestrator/orchestrate.md   how a cloud routine runs a round unattended; orchestrator/watch.md runs the standing watch
 scripts/                      merge_ledger.py, doctor.py; the dashboard builder is under skills/council-ledger
 docs/                         cloud setup, how a round works
 ```
@@ -38,6 +41,7 @@ docs/                         cloud setup, how a round works
 - **The chair never reads a persona's reasoning**, only its five-line summary and the merged ledger. Dispatch personas as subagents with their own context, each told its seat ID, seat brief path and charter path.
 - **Outputs never say "you".** The principal's asks go in "What the council needs from the principal", tiered 0–3.
 - **Run to completion.** Pause mid-round only when the effort is ambiguous or a supplied document contradicts the premise. Batch everything else into the requests list.
+- **Depth is a budget, not a roster.** Every convening is quick, standard or deep (`skills/convening`). Quick writes a memo and no ledger; standard and deep are rounds. The materials gate runs at every depth and says cleared, downgraded or blind.
 - **Round N picks up where round N-1 stopped.** The requests list is the seed of the next round; answers come in at intake and become T1 evidence.
 - **Benches are cheap, seats are one file.** Make a bench per hat. Add a seat by writing `seats/<id>.md`; remove it by deleting the file. Run `python3 scripts/doctor.py` after hand edits.
 - **No secrets in the repo.** Tokens live in the routine's environment.

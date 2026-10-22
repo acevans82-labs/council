@@ -17,6 +17,8 @@ One ledger per effort, at `benches/<bench>/efforts/<effort>/ledger.json`. Prior 
     "round_number": 1,
     "date": "2026-10-20",
     "trigger": "string: what prompted this round, or 'initial'",
+    "depth": "standard|deep (quick convenings are consults and have no ledger)",
+    "materials_gate": {"result": "cleared|downgraded|blind", "missing": ["string"]},
     "prior_round": {"round_id": "string|null", "mode": "none|carry_forward|full_rerun"},
     "supplied_documents": [{"name": "string", "type": "deck|report|financials|contract|plan|notes|other", "received": "YYYY-MM-DD"}]
   },
@@ -33,7 +35,8 @@ One ledger per effort, at `benches/<bench>/efforts/<effort>/ledger.json`. Prior 
   "evidence": [
     {"id": "E-001", "claim": "string", "source_tier": "T1|T2|T3", "reliability": "A|B|C|D",
      "locator": "document p.12 | URL | register entry and date", "retrieved": "2026-10-20T14:02Z",
-     "recorded_by": "financial", "carried_from": null, "reverified": null, "supersedes": null}
+     "recorded_by": "financial", "carried_from": null, "reverified": null, "supersedes": null,
+     "calc": "optional, required on derived numbers: inputs by E- ID, the formula, the assumptions"}
   ],
   "findings": [
     {"id": "F-001", "persona": "financial", "phase": 1, "statement": "string",

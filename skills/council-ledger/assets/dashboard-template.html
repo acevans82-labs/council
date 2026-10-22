@@ -88,6 +88,10 @@ hr{border:0;border-top:1px solid var(--rule);margin:36px 0}
 .pill.t1{background:var(--human);color:var(--paper);border-color:var(--human)}
 .pill.t2{color:var(--ink);border-color:var(--ink)}
 .pill.t3{color:var(--ink-2);border-style:dashed}
+.pill.chg-new{background:var(--ok);color:var(--paper);border-color:var(--ok)} .pill.chg-changed{background:var(--human);color:var(--paper);border-color:var(--human)}
+body.show-changes tr.chg-new td:first-child{box-shadow:inset 4px 0 var(--ok)} body.show-changes tr.chg-changed td:first-child{box-shadow:inset 4px 0 var(--human)}
+body:not(.show-changes) .chg-only{display:none}
+.changes h2{margin-top:0} .changes .delta{font-family:var(--sans);font-size:14px} .changes .up{color:var(--ok)} .changes .down{color:var(--conflict)}
 .tier-strip{display:flex;gap:16px;flex-wrap:wrap;align-items:center;font-family:var(--sans);font-size:13.5px;margin:14px 0 2px}
 .tier-strip #jump-queue{color:var(--chair);text-decoration:underline;cursor:pointer}
 .tier-jump{cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:3px 4px;border-radius:3px}
@@ -162,6 +166,7 @@ a.xref:hover{background:#E7EDF6}
     <button id="btn-exec" aria-pressed="false">Executive summary</button>
     <button id="btn-narrative" aria-pressed="true">Narrative</button>
     <button id="btn-audit" aria-pressed="false">Audit</button>
+    <button id="btn-changes" aria-pressed="true" class="hidden" title="Show or hide what changed since the prior round">Changes</button>
   </div>
 </header>
 
@@ -208,6 +213,10 @@ const effort = g('effort', {}), roster = g('roster', []), phases = g('phases', [
       calls = g('judgment_calls', []), handoffs = g('handoffs', []), gaps = g('gaps', []),
       openq = g('open_questions', []), asmt = g('assessment', {}), chair = g('chair', {}), hist = g('score_history', []),
       xs = g('exec_summary', null);
+const CH = (typeof CHANGES !== 'undefined' && CHANGES) ? CHANGES : null;
+const chgKind = id => (CH && CH.records && CH.records[id] && CH.records[id].kind !== 'carried') ? CH.records[id].kind : '';
+const chgClass = r => { const k = chgKind(r && r.id); return k ? `chg-${k}` : ''; };
+const chgPill = id => { const k = chgKind(id); return k ? ` <span class="pill chg-${k} chg-only">${k === 'new' ? 'new' : 'changed'}</span>` : ''; };
 
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const name = id => (roster.find(r => r.persona_id === id) || {}).name || (id === 'chair' ? 'Chair' : id === 'principal' ? 'Principal' : id || '');
@@ -220,7 +229,7 @@ const pluralize = (n, s) => `${n} ${s}${n === 1 ? '' : 's'}`;
 
 /* Header + strip */
 document.getElementById('title').textContent = `${effort.name || 'Effort'} — council ledger`;
-document.getElementById('meta').textContent = [effort.bench_name, effort.description, roundLabel(effort.round_type), effort.round_id, effort.date].filter(Boolean).join('  ·  ');
+document.getElementById('meta').textContent = [effort.bench_name, effort.description, roundLabel(effort.round_type), effort.round_id, effort.depth ? `depth: ${effort.depth}` : null, (effort.materials_gate && effort.materials_gate.result && effort.materials_gate.result !== 'cleared') ? `materials: ${effort.materials_gate.result}` : null, effort.date].filter(Boolean).join('  ·  ');
 document.getElementById('strip').innerHTML = [
   [asmt.score != null ? `${asmt.score} ±${asmt.band ?? 0}` : '—', (asmt.label || 'score')], [roster.length, 'personas'],
   [`${headlines.length} / ${findings.length}`, 'headline / total findings'],
@@ -239,10 +248,26 @@ document.getElementById('spine').innerHTML = phases.length ? phases.map(r => {
 }).join('') : '<p class="empty">No phases recorded.</p>';
 
 /* Executive summary view — two or three sheets, rendered from ledger.exec_summary */
+function changesSection() {
+  if (!CH) return '';
+  const sc = CH.score || {}, c = CH.counts || {};
+  const arrow = (a, b) => a == null || b == null ? '' : b > a ? `<span class="up">&#9650; ${b - a}</span>` : b < a ? `<span class="down">&#9660; ${a - b}</span>` : '<span class="muted">unchanged</span>';
+  let h = `<section class="changes chg-only"><h2>What changed since ${esc(CH.prior_round_id || 'the prior round')}</h2>`;
+  h += `<p class="delta">Score ${esc(sc.from ?? '—')} &rarr; <b>${esc(sc.to ?? '—')}</b> ${arrow(sc.from, sc.to)} · band ±${esc(sc.band_from ?? '—')} &rarr; ±${esc(sc.band_to ?? '—')}`;
+  if (CH.prior_dashboard) h += ` · <a href="${esc(CH.prior_dashboard)}">open the prior dashboard</a>`;
+  h += `</p>`;
+  if ((CH.drivers || []).length) h += `<p class="delta">Drivers that moved: ${CH.drivers.map(d => `${esc(d.name || d.key)} ${esc(d.from ?? '—')} &rarr; ${esc(d.to ?? '—')} ${arrow(d.from, d.to)}`).join(' · ')}</p>`;
+  else h += `<p class="delta muted">No driver score moved.</p>`;
+  const list = (label, ids) => ids && ids.length ? `<p class="delta"><b>${label}</b>: ${ids.map(esc).join(', ')}</p>` : '';
+  h += list('Requests answered', CH.answered) + list('Gaps closed', CH.closed_gaps) + list('Conflicts resolved', CH.resolved_conflicts) + list('Headlines demoted', CH.demoted);
+  h += `<p class="delta">${esc(c.new ?? 0)} new records this round, ${esc(c.changed ?? 0)} carried records changed, ${esc(c.carried ?? 0)} carried unchanged; ${esc((CH.new_headlines || []).length)} headlines now (${esc(CH.prior_headline_count ?? 0)} before). New and changed rows are marked in the Audit view while this toggle is on.</p></section>`;
+  return h;
+}
 function execView() {
   if (!xs) return '';
   let h = '';
   const lead = asmt.score != null ? `${esc(asmt.score)} of 100, confidence ±${esc(asmt.band ?? 0)}` : 'No score recorded';
+  h += changesSection();
   h += `<section><p class="lead">${lead}.</p><p>${esc(xs.verdict || asmt.verdict || '')}</p>`;
   if ((asmt.drivers || []).length) h += `<table><thead><tr><th>Driver</th><th>Weight</th><th>Score</th></tr></thead><tbody>${asmt.drivers.map(d => `<tr><td>${esc(d.name)}</td><td>${esc(d.weight)}%</td><td>${esc(d.score)} / 10</td></tr>`).join('')}</tbody></table>`;
   h += `</section>`;
@@ -286,6 +311,7 @@ function narrative() {
   const disc = conflicts.filter(c => c.public_disclosure_relevant);
   let h = '';
   const lead = asmt.score != null ? `${esc(asmt.label || 'Score')}: ${esc(asmt.score)} of 100, confidence ±${esc(asmt.band ?? 0)}` : 'No score recorded';
+  h += changesSection();
   h += `<section><p class="lead">${lead}.</p><p>${esc(asmt.verdict || '')}</p>`;
   if ((asmt.drivers || []).length) h += `<h3>Drivers</h3><table><thead><tr><th>Driver</th><th>Weight</th><th>Score</th><th>Why</th></tr></thead><tbody>${asmt.drivers.map(d => `<tr><td>${esc(d.name)}</td><td>${esc(d.weight)}%</td><td>${esc(d.score)} / 10</td><td class="muted">${esc(d.rationale || '')} <span class="id">${(d.finding_ids||[]).join(', ')}</span></td></tr>`).join('')}</tbody></table>`;
   if ((asmt.top_movers || []).length) h += `<h3>What moved the score most</h3>${asmt.top_movers.map(c => `<p>${esc(c)}</p>`).join('')}`;
@@ -323,7 +349,7 @@ function narrative() {
 
   h += `<section><h2>Where judgment was needed</h2><div class="cols">`;
   h += `<div><div class="note chair"><h4>The chair ruled ${pluralize(rulings.length,'time')}</h4>${rulings.length ? rulings.map(r => `<p><b>${esc(r.on)}</b> — ${esc(r.decision)}<br><span class="muted">${esc(r.rationale)}</span></p>`).join('') : '<p class="empty">No rulings.</p>'}</div></div>`;
-  h += `<div><div class="note human"><h4>${pluralize(calls.length,'request')} to the principal</h4>${calls.length ? calls.map(j => `<p><b>${esc(j.question)}</b><br><span class="muted">Why the council could not decide: ${esc(j.why_principal)}</span>${j.answer ? `<br>Answer: ${esc(j.answer)}` : ''}${j.impact ? `<br><span class="muted">Effect: ${esc(j.impact)}</span>` : ''}</p>`).join('') : '<p class="empty">Nothing needed from the chairman.</p>'}</div></div>`;
+  h += `<div><div class="note human"><h4>${pluralize(calls.length,'request')} to the principal</h4>${calls.length ? calls.map(j => `<p><b>${esc(j.question)}</b><br><span class="muted">Why the council could not decide: ${esc(j.why_principal)}</span>${j.answer ? `<br>Answer: ${esc(j.answer)}` : ''}${j.impact ? `<br><span class="muted">Effect: ${esc(j.impact)}</span>` : ''}</p>`).join('') : '<p class="empty">Nothing needed from the principal.</p>'}</div></div>`;
   h += `</div></section>`;
 
   h += `<section><h2>What remains open</h2>`;
@@ -339,7 +365,7 @@ function narrative() {
 const TABS = ["Principal's queue",'Timeline','Personas','Findings','Conflicts','Rulings & requests','Evidence','Gaps & open'];
 let activeTab = 0;
 function renderTabs(){ document.getElementById('tabs').innerHTML = TABS.map((t,i)=>`<button role="tab" aria-selected="${i===activeTab}" data-i="${i}">${t}</button>`).join(''); }
-function fTable(rows, cols){ return `<table><thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td class="${c[2]||''}">${c[1](r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
+function fTable(rows, cols){ return `<table><thead><tr>${cols.map(c=>`<th>${c[0]}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr class="${chgClass(r)}">${cols.map(c=>`<td class="${c[2]||''}">${c[1](r)}</td>`).join('')}</tr>`).join('')}</tbody></table>`; }
 function audit(i){
   const p = document.getElementById('tabpanel');
   if (i===0) {
@@ -503,7 +529,7 @@ const dd = (t, v) => v ? `<dt>${t}</dt><dd>${v}</dd>` : '';
 const list = ids => (ids || []).join(', ');
 function recordHTML(id) {
   const r = INDEX[id]; if (!r) return '<p class="empty">Record not found.</p>';
-  let h = `<div class="d-kind">${esc(kindOf(id))}${(r.phase ?? r.round) != null ? ' · phase ' + esc(r.phase ?? r.round) : ''}${r.persona ? ' · ' + esc(name(r.persona)) : ''}${r.recorded_by ? ' · recorded by ' + esc(name(r.recorded_by)) : ''}</div>`;
+  let h = `<div class="d-kind">${esc(kindOf(id))}${chgPill(id)}${(r.phase ?? r.round) != null ? ' · phase ' + esc(r.phase ?? r.round) : ''}${r.persona ? ' · ' + esc(name(r.persona)) : ''}${r.recorded_by ? ' · recorded by ' + esc(name(r.recorded_by)) : ''}</div>`;
   h += `<h3>${esc(id)}</h3>`;
   h += `<p style="font-size:17px">${esc(gist(r))}</p>`;
   const tags = [];
@@ -589,6 +615,8 @@ const setView = v => {
   document.getElementById('btn-narrative').setAttribute('aria-pressed', v==='narrative');
   document.getElementById('btn-audit').setAttribute('aria-pressed', v==='audit');
 };
+const chgBtn = document.getElementById('btn-changes');
+if (CH) { chgBtn.classList.remove('hidden'); document.body.classList.add('show-changes'); chgBtn.onclick = () => { const on = !document.body.classList.contains('show-changes'); document.body.classList.toggle('show-changes', on); chgBtn.setAttribute('aria-pressed', on); }; }
 document.getElementById('btn-exec').onclick = () => setView('exec');
 document.getElementById('btn-narrative').onclick = () => setView('narrative');
 document.getElementById('btn-audit').onclick = () => setView('audit');

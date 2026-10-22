@@ -61,6 +61,14 @@ Stakeholder order: domain-expert-a, domain-expert-b, end-user, values-ethics, co
 | evidence-auditor | redteam | high | Grades every citation at source; on this bench the audit is most of the work |
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: nothing beyond the context folder
+standard: the question written precisely and the sources the principal already trusts or distrusts
+deep: the question, the principal's own data or prior work, and the specific studies or sources the answer must engage
+
+## Depth profiles
+(defaults per skills/convening)
+
 ## Primary sources in this field
 T1 is what the principal supplies: their own data, notes, drafts, the articles that prompted the question. T2 on this bench: peer-reviewed journals and their published corrections and retractions; pre-registrations and trial registries; primary datasets and official statistics; archives and primary documents for historical questions; systematic reviews from recognised bodies; standards and guidelines from professional and official bodies, graded as evidence only where they cite theirs. T3: textbooks and popular books, press, encyclopedias, preprints not yet reviewed (graded by their method, not their venue), blogs, talks, and the principal's own field's folklore. The lookback is set to 120 months rather than the default 24 because the evidence on a question accumulates over decades and the decisive study is often old; personas still read the most recent reviews first and say where the record has moved inside the last two years.
 

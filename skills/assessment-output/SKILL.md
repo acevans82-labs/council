@@ -17,7 +17,7 @@ File: `benches/<bench>/efforts/<effort>/assessments/<round_id>-assessment.md`. W
 Structure, in this order; sections with nothing to say are one line, never omitted. The bench's `bench.md` names the subject sections (item 2) and the stakeholder order (item 4); `effort.noun` replaces "company" in headings.
 ```
 # [Effort] — [Bench name] assessment
-Round [round_id] (round N) · [initial | update: trigger] · [date] · Chair competence: [rating]
+Round [round_id] (round N) · [initial | update: trigger] · depth: [standard|deep] · materials: [cleared|downgraded|blind: items] · [date] · Chair competence: [rating]
 
 ## 1. Score and verdict
 [score_label]: score, band, horizon. The verdict. Top movers. Biggest stakeholder risk. What would raise the score.

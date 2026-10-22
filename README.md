@@ -13,7 +13,7 @@ You wear several hats. Each hat gets a **bench**: a board member's bench, a foun
    Or just `git clone` this repository.
 2. **Open it in Claude Code** and say "set up my council". There is nothing to install: `CLAUDE.md` routes plain words to the commands. (If you prefer slash commands, install it as a plugin: `claude plugin marketplace add acevans82-labs/council` then `claude plugin install council@council`.)
 3. **Answer the setup questions**: who you are, which hats you wear, which one to bench first. Setup offers a preset that matches and adjusts it with you.
-4. **Bring the first effort**: "run the council on Acme" or "vet this idea". Intake is one batch of questions; then the council runs.
+4. **Bring the first effort**: "run the council on Acme" or "vet this idea". Intake is one batch of questions; then the council runs. For a quick answer, "consult the council on X" gives a cited memo in minutes.
 
 Python 3.9+ is the only requirement; the two scripts use the standard library.
 
@@ -24,6 +24,17 @@ Python 3.9+ is the only requirement; the two scripts use the standard library.
 - **What the council needs from you**: numbered, tiered 0–3, the seed of the next round.
 
 `docs/how-a-round-works.md` walks through the ten steps in plain language.
+
+## How deep
+"Consult the council" is one verb with three depths. **Quick** (5 to 10 minutes) picks the seats that matter, sits once, and writes a cited memo with no ledger. **Standard** (30 to 60 minutes) runs the full roster through condensed phases and scores. **Deep** (hours, cloud by default) is the full nine phases. The levers behind each profile (seats, phases, retrieval, models, sittings, budget) are explicit in `skills/convening`, and a bench can override them. The chair can add a guest seat for one convening when the question needs an expert the bench lacks.
+
+Every convening passes the **materials gate**: the bench's ladder says what supplied material each depth needs, and the council says cleared, downgraded or blind before it starts. Each bench also has a `context/` folder, read first at every depth, which is how the business or the situation gets trained in.
+
+## Standing research
+"Watch Acme for me" turns on a scheduled scan of the bench's sources for the effort's terms, a triage pass against what the council already found, and an action: log it, queue it for the next round, or convene at quick or standard depth. Cadence is nightly, weekly, monthly or quarterly per effort; one scheduled cloud routine serves every watch in the repo. The results arrive as a pull request with a watch brief.
+
+## Dashboards on demand
+Every round keeps its own dashboard. From round 2 the dashboard carries a **Changes** toggle: what moved since the prior round (score, drivers, requests answered, gaps closed, headlines demoted), marks on every new or changed row, and a link to the prior version. `dashboards/index.html` lists every round with its score and movement, the consults and the watch briefs. The written assessment's redline is git's.
 
 ## Presets
 Ready-made benches under `presets/`. Setup copies one and adjusts it; you can also copy by hand.
@@ -53,8 +64,10 @@ More presets are welcome by pull request. A preset is a `bench.md` and a folder 
 | `/council-setup` | first run: who you are, your hats, the first bench, cloud or not |
 | `/council-bench new \| switch \| list \| edit` | one bench per hat |
 | `/council-seat add \| remove \| edit \| list \| library` | one file per seat |
-| `/council-run <effort>` | round 1 on a new effort |
-| `/council-round <effort>` | the next round: answers, what changed, what moved |
+| `/council-consult <question> [quick\|standard\|deep]` | a cited memo in minutes, or a scored round at the deeper settings |
+| `/council-run <effort> [standard\|deep]` | round 1 on a new effort |
+| `/council-round <effort> [standard\|deep]` | the next round: answers, what changed, what moved |
+| `/council-watch on\|off\|edit\|status\|brief <effort>` | standing research between rounds |
 | `/council-status` | every bench and effort, open requests first |
 | `/council-doctor` | checks the workspace and fixes what it can |
 
@@ -64,13 +77,14 @@ Locally, the chair dispatches every seat as a subagent in your session and you w
 ## How it is built
 ```
 council.md                    you and your benches (created by setup)
-benches/<bench>/              bench.md, seats/, efforts/<effort>/{brief.md, documents/, ledger.json, rounds/, assessments/, dashboards/}
+benches/<bench>/              bench.md, seats/, context/, efforts/<effort>/{brief.md, documents/, ledger.json, rounds/, consults/, watch.md, assessments/, dashboards/}
 presets/<preset>/             bench.md + seats/
 agents/                       persona charters, _template.md
-skills/                       the rules: protocols, evidence ledger, retrieval, conflicts, rebuttal, scoring, outputs, dashboard, intake, bench design, seat authoring
+skills/                       the rules: protocols, evidence ledger, retrieval, conflicts, rebuttal, scoring, outputs, dashboard, intake, bench design, seat authoring, convening (depth), standing watch
 commands/                     the slash commands
-orchestrator/orchestrate.md   the cloud routine's procedure
-scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py
+orchestrator/                 orchestrate.md (a round in the cloud), watch.md (the scheduled watch)
+scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py, build_effort_index.py
+docs/suite-integration.md     how the council will plug into BDLC and NDLC (planned, not wired)
 skills/council-ledger/        build_dashboard.py and the HTML template
 ```
 The engine is deliberately small: two scripts and a template. Everything else is markdown that Claude reads, which is why anyone can change it.
@@ -80,5 +94,8 @@ Each effort's documents live in its own folder and are read only during that eff
 
 ## Lineage
 Council generalizes a private board-director's council built for US healthcare-services companies in 2026. That council's method (evidence tiers, the headline threshold, the conflict register, the rebuttal round, the evidence auditor, priority tiers on every ask) is kept whole; its field lives on as the `board-director-healthcare` preset.
+
+## The suite
+Council is one of three: NDLC builds software, BDLC runs a venture, the council deliberates. `docs/suite-integration.md` is the plan for how they will hand work to each other.
 
 MIT licensed.

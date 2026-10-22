@@ -209,6 +209,13 @@ def check_bench(root, bench_dir, personas, is_preset=False):
             warn(f"{label}/bench.md: seat '{s}' exists but is not in the Roster table")
         for s in sorted(listed - seat_ids):
             warn(f"{label}/bench.md: Roster table lists '{s}' but seats/{s}.md is missing")
+    if not re.search(r"##\s+Materials ladder", body):
+        warn(f"{label}/bench.md: no '## Materials ladder' section; the materials gate will treat every depth as cleared")
+    ctx = bench_dir / "context"
+    if not ctx.exists():
+        warn(f"{label}: no context/ folder (every convening reads it first; create it with a README.md)")
+    elif not is_preset and not any(p.suffix == ".md" and p.name != "README.md" for p in ctx.iterdir()):
+        warn(f"{label}/context: only a README; add an overview so convenings start with the basics")
     if not is_preset:
         for ed in sorted((bench_dir / "efforts").glob("*/")) if (bench_dir / "efforts").exists() else []:
             check_effort(label, ed)
@@ -237,6 +244,15 @@ def check_effort(label, ed):
         a = ledger.get("assessment", {})
         if a and a.get("score") is not None and not a.get("label"):
             warn(f"{elabel}/ledger.json: assessment has a score but no label")
+    wp = ed / "watch.md"
+    if wp.exists():
+        wfm, _ = frontmatter(wp)
+        if wfm.get("cadence") not in ("nightly", "weekly", "monthly", "quarterly"):
+            err(f"{elabel}/watch.md: cadence must be nightly, weekly, monthly or quarterly")
+        if not wfm.get("terms"):
+            err(f"{elabel}/watch.md: no terms to watch for")
+        if wfm.get("on_material") not in (None, "", "queue", "quick", "standard"):
+            err(f"{elabel}/watch.md: on_material must be queue, quick or standard (never deep)")
     sh = ed / "score-history.json"
     if sh.exists():
         try:

@@ -1,14 +1,79 @@
 #!/usr/bin/env python3
 """Build the council ledger dashboard from ledger.json.
 
-Usage: build_dashboard.py <ledger.json> <output.html>
+Usage: build_dashboard.py <ledger.json> <output.html> [--prior <prior-ledger.json>]
 
 Reads the ledger, validates the fields the dashboard depends on, injects the JSON
 into the template at the /*__LEDGER__*/ marker, and writes a standalone HTML file.
+With --prior, also computes what changed since the prior round (score and driver
+deltas, requests answered, gaps closed, conflicts resolved, carried records that
+changed, and what is new) and injects it as CHANGES so the dashboard can show,
+hide and link the differences.
 """
+import argparse
 import json
 import sys
 from pathlib import Path
+
+VOLATILE = {"carried_from", "reverified", "id"}
+ARRAYS = ["evidence", "findings", "conflicts", "rulings", "judgment_calls", "handoffs", "gaps", "open_questions"]
+
+
+def strip_p(rid: str) -> str:
+    return rid[2:] if isinstance(rid, str) and rid.startswith("P/") else rid
+
+
+def changes(cur: dict, prior: dict) -> dict:
+    pr_index = {}
+    for key in ARRAYS:
+        for rec in prior.get(key, []):
+            pr_index[strip_p(str(rec.get("id", "")))] = (key, rec)
+    records, counts = {}, {"new": 0, "changed": 0, "carried": 0}
+    answered, closed_gaps, resolved_conflicts, demoted = [], [], [], []
+    for key in ARRAYS:
+        for rec in cur.get(key, []):
+            rid = str(rec.get("id", ""))
+            base = strip_p(rid)
+            if rid.startswith("P/") and base in pr_index:
+                old = pr_index[base][1]
+                a = {k: v for k, v in rec.items() if k not in VOLATILE}
+                o = {k: v for k, v in old.items() if k not in VOLATILE}
+                if a != o:
+                    diff = sorted(k for k in set(a) | set(o) if a.get(k) != o.get(k))
+                    records[rid] = {"kind": "changed", "fields": diff}
+                    counts["changed"] += 1
+                    if key == "judgment_calls" and rec.get("answer") and not old.get("answer"):
+                        answered.append(rid)
+                    if key == "gaps" and old.get("status") == "not_found" and rec.get("status") != "not_found":
+                        closed_gaps.append(rid)
+                    if key == "conflicts" and (not old.get("resolved_by") or old.get("resolved_by") == "unresolved") \
+                            and rec.get("resolved_by") not in (None, "", "unresolved"):
+                        resolved_conflicts.append(rid)
+                    if key == "findings" and old.get("status") == "headline" and rec.get("status") != "headline":
+                        demoted.append(rid)
+                else:
+                    records[rid] = {"kind": "carried"}
+                    counts["carried"] += 1
+            else:
+                records[rid] = {"kind": "new"}
+                counts["new"] += 1
+    pa, ca = prior.get("assessment", {}), cur.get("assessment", {})
+    pd = {d.get("key"): d for d in pa.get("drivers", [])}
+    drivers = []
+    for d in ca.get("drivers", []):
+        o = pd.get(d.get("key"), {})
+        if o.get("score") != d.get("score"):
+            drivers.append({"key": d.get("key"), "name": d.get("name"), "from": o.get("score"), "to": d.get("score")})
+    pe, ce = prior.get("effort", {}), cur.get("effort", {})
+    return {
+        "prior_round_id": pe.get("round_id"), "round_id": ce.get("round_id"),
+        "prior_dashboard": f"{pe.get('round_id')}-council-ledger.html" if pe.get("round_id") else None,
+        "score": {"from": pa.get("score"), "to": ca.get("score"), "band_from": pa.get("band"), "band_to": ca.get("band")},
+        "drivers": drivers, "records": records, "counts": counts,
+        "answered": answered, "closed_gaps": closed_gaps, "resolved_conflicts": resolved_conflicts, "demoted": demoted,
+        "new_headlines": [f.get("id") for f in cur.get("findings", []) if f.get("status") == "headline"],
+        "prior_headline_count": sum(1 for f in prior.get("findings", []) if f.get("status") == "headline"),
+    }
 
 TEMPLATE = Path(__file__).resolve().parent.parent / "assets" / "dashboard-template.html"
 
@@ -69,18 +134,31 @@ def validate(ledger: dict) -> None:
 
 
 def main() -> int:
-    if len(sys.argv) != 3:
-        print(__doc__)
-        return 2
-    src, out = Path(sys.argv[1]), Path(sys.argv[2])
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("ledger")
+    ap.add_argument("output")
+    ap.add_argument("--prior", help="the prior round's ledger.json, to compute what changed")
+    args = ap.parse_args()
+    src, out = Path(args.ledger), Path(args.output)
     ledger = json.loads(src.read_text())
     validate(ledger)
     template = TEMPLATE.read_text()
     if "/*__LEDGER__*/" not in template:
         print("error: template missing /*__LEDGER__*/ marker", file=sys.stderr)
         return 1
+    chg = None
+    if args.prior:
+        prior = json.loads(Path(args.prior).read_text())
+        chg = changes(ledger, prior)
+        c = chg["counts"]
+        print(f"changes vs {chg['prior_round_id']}: {c['new']} new, {c['changed']} changed, {c['carried']} carried unchanged; "
+              f"{len(chg['answered'])} requests answered, {len(chg['closed_gaps'])} gaps closed, {len(chg['resolved_conflicts'])} conflicts resolved")
+    elif ledger.get("effort", {}).get("prior_round", {}).get("round_id"):
+        warn("ledger names a prior round but --prior was not given; the dashboard will not show what changed")
     payload = json.dumps(ledger, ensure_ascii=False).replace("</", "<\\/")
-    html = template.replace("/*__LEDGER__*/", f"const LEDGER = {payload};")
+    cpayload = json.dumps(chg, ensure_ascii=False).replace("</", "<\\/") if chg else "null"
+    html = template.replace("/*__LEDGER__*/", f"const LEDGER = {payload};\nconst CHANGES = {cpayload};")
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     print(f"wrote {out} ({len(html)//1024} KB)")
     return 0

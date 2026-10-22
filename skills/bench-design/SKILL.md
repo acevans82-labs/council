@@ -9,8 +9,10 @@ A bench is one hat the principal wears: a role, a field, the kind of thing it as
 
 ```
 benches/<slug>/
-  bench.md          the hat, the question, the scoring frame, the roster index
+  bench.md          the hat, the question, the scoring frame, the roster index, the materials ladder
   seats/<id>.md     one seat brief per persona on the bench (the roster is this folder)
+  context/          standing material every convening reads: the business or situation in brief,
+                    glossary, strategy, org and people, prior decisions, house rules (see below)
   efforts/          one folder per thing the bench works on
 ```
 
@@ -25,7 +27,9 @@ Benches are cheap. Make one per hat, not one giant bench. Switching hats is swit
 6. **What must be true.** The facts that have to hold: the numbers, the market, the rules, the feasibility, the evidence base. Each becomes an analyst seat.
 7. **The other party.** Who receives a briefing after a round (a management team, a counterparty, a vendor, nobody).
 8. **Confidentiality.** Anything that never leaves the effort folder; whether documents should be committed or kept local.
-9. **Preset.** Offer the presets whose noun and role match (`presets/*/bench.md`, read their frontmatter). The principal picks one to adjust, or builds from scratch.
+9. **Context.** What every convening should already know before it starts: a page on the organization or situation, a glossary, the current strategy or plan, who is who, decisions already made, rules of the house. Collect what exists now into `context/`; list what to add later in `context/README.md`.
+10. **Materials.** What material a serious assessment needs on this bench (a board deck, financials, a plan, a study, a budget) and what a lighter one can do without. This becomes the materials ladder.
+11. **Preset.** Offer the presets whose noun and role match (`presets/*/bench.md`, read their frontmatter). The principal picks one to adjust, or builds from scratch.
 
 ## Roster method
 - **Analysts** (phase 2) establish facts. Four to eight. Always include whichever of `financial`, `market-competitive`, `regulatory-policy`, `operating-model`, `research-evidence`, `options-tradeoffs`, `technical-feasibility`, `product-positioning`, `valuation-precedent` the "what must be true" answer implies.
@@ -44,6 +48,21 @@ Four to eight drivers, weights summing to 100, each with anchors for 9–10, 5�
 **decision** (label: Likelihood this choice serves [goal] over [horizon]): fit_with_goals 20 · evidence_it_works 20 · cost_affordability 15 · reversibility_risk 15 · effect_on_people 15 · timing 15.
 **initiative** (label: Likelihood this initiative delivers its objective by [date]): objective_value 20 · feasibility 20 · resourcing 15 · risk_compliance 15 · buy_in 15 · timing 15.
 **question** (label: Confidence that the evidence supports the council's answer): evidence_quality 25 · consensus 20 · mechanism 20 · applicability 20 · counter_evidence 15.
+
+## The context folder
+`context/` is how the bench is "trained in" the business or the situation. Every convening reads it first, at every depth, and personas cite it as T1 ("context: strategy.md, section 2"). Keep it to what is stable across efforts; effort-specific material goes in the effort's `documents/`. Typical files: `overview.md`, `glossary.md`, `strategy.md`, `people.md`, `decisions.md`, `house-rules.md`. A `README.md` lists what is there and what is still wanted. A tighter harness (a company deployment) is a bench with a locked context folder, a locked source list and a depth cap in `## Depth profiles`.
+
+## The materials ladder
+Three lines in `bench.md` under `## Materials ladder`, one per depth, naming what the gate in `skills/intake` expects:
+```
+quick: nothing beyond the context folder
+standard: <e.g. a management summary or plan, and the latest numbers>
+deep: <e.g. the board deck, financial statements, contracts or the study base>
+```
+Add `materials_gate: hard` to the frontmatter when a convening must not proceed blind.
+
+## Depth profiles
+Defaults live in `skills/convening`. A bench that needs different cells writes only those under `## Depth profiles` as `profile.lever: value` lines (for example `standard.lookback_months: 120`, `deep.max_depth: standard`, `deep.chair_model: <id>`).
 
 ## Assessment outline
 Name the subject sections the assessment writes after the score (three to five), in order, and the stakeholder order. For a company: industry standing; competitive positioning and value proposition; operating strengths and weaknesses. For an idea: problem and demand; solution and differentiation; timing and economics. For a decision: the options; the evidence; the costs and reversibility; the people affected.
@@ -90,6 +109,14 @@ Subject sections in order; stakeholder order.
 | --- | --- | --- | --- |
 (The seats/ folder is authoritative; this table is the readable index. `scripts/doctor.py` warns when they disagree.)
 
+## Materials ladder
+quick: …
+standard: …
+deep: …
+
+## Depth profiles
+(optional; only the cells that differ from skills/convening)
+
 ## Primary sources in this field
 What counts as T2 here; the registers, regulators, journals and databases a persona should check first.
 
@@ -100,4 +127,4 @@ Who they are, what they may see, what they may not.
 ```
 
 ## After writing
-Run `python3 scripts/doctor.py` and fix what it reports. Add the bench to the index in `council.md`. Tell the principal the roster in one compact table and the question in one line, and offer to start the first effort.
+Create `context/README.md`. Run `python3 scripts/doctor.py` and fix what it reports. Add the bench to the index in `council.md`. Tell the principal the roster in one compact table and the question in one line, and offer to start the first effort.
