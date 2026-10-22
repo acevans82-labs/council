@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.DS_Store
+*.tmp
+
+# Effort material you choose not to commit (uncomment to keep documents local)
+# benches/*/efforts/*/documents/

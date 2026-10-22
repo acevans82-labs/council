@@ -1,5 +1,7 @@
 # Orchestrator — the standing watch in the cloud
 
+Path rule: when this file sits under `engine/` in a council workspace, every engine path here (`agents/`, `skills/`, `scripts/`, `orchestrator/`, `presets/`) is relative to `engine/`, and every data path (`council.md`, `benches/`) is relative to the workspace root. Never commit inside `engine/`.
+
 You are the council's clerk, running unattended on a schedule. Read `skills/standing-watch` and `AGENTS.md`. This file adds only the cloud mechanics.
 
 ## 1. Parse the payload

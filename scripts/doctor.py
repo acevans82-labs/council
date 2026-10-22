@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Council workspace doctor.
 
-Usage: doctor.py [--quick] [--root DIR]
+Usage: doctor.py [--quick] [--root DIR] [--presets]
 
 Checks the engine files, council.md, every bench (bench.md, seats/, roster table,
 driver weights) and every effort (brief, ledger, score history). Prints one line
 per problem and exits 1 if any ERROR was found, 0 otherwise. --quick checks only
 the engine and council.md. Stdlib only.
+
+Engine root is this script's grandparent. Workspace root is --root, else the
+current directory when it holds council.md or benches/ or an engine/ submodule,
+else the engine root (developing or trying the engine with data at its root).
 """
 import argparse
 import json
@@ -90,6 +94,17 @@ def check_engine(root):
     for rel in ENGINE:
         if not (root / rel).exists():
             err(f"engine file missing: {rel}")
+    try:
+        import subprocess
+        r = subprocess.run([sys.executable, str(root / "scripts" / "check_update.py")], capture_output=True, text=True, timeout=40)
+        first = (r.stdout.splitlines() or [""])[0]
+        info = json.loads(first) if first.startswith("{") else {}
+        if info.get("status") == "available":
+            warn(f"engine {info.get('latest')} is available (you have {info.get('current')}); run check_update.py --apply, or --snooze")
+        elif info.get("status") == "snoozed":
+            print(f"note: engine {info.get('latest')} available, snoozed until {info.get('until')}")
+    except Exception:
+        pass
     if sys.version_info < (3, 9):
         warn(f"python {sys.version.split()[0]} found; 3.9+ recommended")
     agents = root / "agents"
@@ -102,6 +117,22 @@ def check_engine(root):
                 warn(f"agents/{p.name}: frontmatter name '{fm.get('name')}' != file stem")
             if not fm.get("description"):
                 warn(f"agents/{p.name}: no description")
+
+
+def check_workspace(ws, engine):
+    if ws == engine:
+        return
+    sub = ws / "engine"
+    if not sub.exists() or not (sub / ".claude-plugin" / "plugin.json").exists():
+        err("workspace: engine/ submodule is missing or empty; run: git submodule update --init")
+    tpl = engine / "templates" / "workspace" / "CLAUDE.md"
+    own = ws / "CLAUDE.md"
+    if not own.exists():
+        err("workspace: no CLAUDE.md; copy engine/templates/workspace/CLAUDE.md")
+    elif tpl.exists() and own.read_text(encoding="utf-8").strip() != tpl.read_text(encoding="utf-8").strip():
+        warn("workspace: CLAUDE.md differs from engine/templates/workspace/CLAUDE.md (a newer block, or a local edit); copy it over to take the update")
+    if not (ws / "AGENTS.md").exists():
+        warn("workspace: no AGENTS.md; cloud rounds will not know to fetch the submodule (copy engine/templates/workspace/AGENTS.md)")
 
 
 def check_council(root):
@@ -269,23 +300,29 @@ def main():
     ap.add_argument("--root", default=None)
     ap.add_argument("--presets", action="store_true", help="also check presets/")
     args = ap.parse_args()
-    root = Path(args.root) if args.root else Path(__file__).resolve().parent.parent
-    check_engine(root)
+    engine = Path(__file__).resolve().parent.parent
+    if args.root:
+        root = Path(args.root).resolve()
+    else:
+        cwd = Path.cwd().resolve()
+        root = cwd if any((cwd / x).exists() for x in ("council.md", "benches", "engine")) and cwd != engine else engine
+    check_engine(engine)
+    check_workspace(root, engine)
     check_council(root)
     if not args.quick:
         personas = {}
-        for p in (root / "agents").glob("*.md"):
+        for p in (engine / "agents").glob("*.md"):
             if p.name.startswith("_") or p.stem == "chair":
                 continue
             fm, _ = frontmatter(p)
             d = (fm.get("description") or "").lower()
             layer = "analyst" if d.startswith("analyst") else "stakeholder" if d.startswith("stakeholder") else "redteam" if d.startswith("red-team") else ""
             personas[p.stem] = layer
-        for bd in sorted((root / "benches").glob("*/")):
+        for bd in sorted((root / "benches").glob("*/")) if (root / "benches").exists() else []:
             if bd.is_dir():
                 check_bench(root, bd, personas)
         if args.presets:
-            for bd in sorted((root / "presets").glob("*/")):
+            for bd in sorted((engine / "presets").glob("*/")):
                 if bd.is_dir():
                     check_bench(root, bd, personas, is_preset=True)
     errors = sum(1 for lvl, _ in problems if lvl == "ERROR")

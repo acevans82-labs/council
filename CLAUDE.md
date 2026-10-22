@@ -1,6 +1,8 @@
-# Council — how to work in this repository
+# Council — how to work with the engine
 
-This repository is a **council**: a swarm of AI personas with seats, chaired by a neutral chair, that deliberates on whatever its principal brings it (a company, an idea, a deal, a decision, an initiative, a question), round after round, with every claim traced to an evidence ledger. The person talking to you is **the principal**. One principal can wear several hats; each hat is a **bench** with its own roster and scoring frame; each thing a bench works on is an **effort**; each pass of the council on an effort is a **round**.
+**Engine or workspace?** This file belongs to the council **engine**: the personas, skills, commands, scripts and orchestrators. A person's data (their `council.md` and `benches/`) lives in a **workspace** repository that mounts this engine as the git submodule `engine/` (template: github.com/acevans82-labs/council-workspace). When you are in a workspace, its own `CLAUDE.md` sends you here and adds one path rule: engine paths are relative to `engine/`, data paths to the workspace root. When you are in the engine repository itself, you are either developing the engine (edit on a branch, follow `RELEASING.md`) or trying it out: data may live at this root too, and every path below works unchanged.
+
+This engine runs a **council**: a swarm of AI personas with seats, chaired by a neutral chair, that deliberates on whatever its principal brings it (a company, an idea, a deal, a decision, an initiative, a question), round after round, with every claim traced to an evidence ledger. The person talking to you is **the principal**. One principal can wear several hats; each hat is a **bench** with its own roster and scoring frame; each thing a bench works on is an **effort**; each pass of the council on an effort is a **round**.
 
 ## Zero-install routing
 The slash commands in `commands/` work when this repo is installed as a plugin, but nothing requires that. When the principal asks in plain words, read the matching command file and follow it exactly as if they had typed the slash command:
@@ -21,7 +23,8 @@ If `council.md` does not exist yet, every path starts with setup.
 
 ## Where things live
 ```
-council.md                    the principal and the bench index (created by setup)
+council.md                    the principal and the bench index (created by setup)   [workspace]
+benches/                      the data                                                [workspace]
 benches/<bench>/bench.md      one hat: role, field, question, scoring frame, roster index
 benches/<bench>/seats/*.md    the roster: one seat brief per persona (file stem = seat ID)
 benches/<bench>/context/      standing material every convening reads first (the bench's "training")
@@ -45,10 +48,12 @@ docs/                         cloud setup, how a round works
 - **Round N picks up where round N-1 stopped.** The requests list is the seed of the next round; answers come in at intake and become T1 evidence.
 - **Benches are cheap, seats are one file.** Make a bench per hat. Add a seat by writing `seats/<id>.md`; remove it by deleting the file. Run `python3 scripts/doctor.py` after hand edits.
 - **No secrets in the repo.** Tokens live in the routine's environment.
+- **Never edit `engine/` from a workspace.** Engine changes are releases; a workspace updates its pointer (`scripts/check_update.py`).
 
 ## Engine commands
 ```bash
-python3 scripts/doctor.py                  # check the workspace (add --presets to check presets too)
+python3 scripts/doctor.py                  # check the workspace (add --presets to check presets too); finds the workspace from the current directory
+python3 scripts/check_update.py            # is a newer engine release available? (--apply to take it, --snooze for 3 days)
 python3 scripts/merge_ledger.py <ledger.json> <round_dir> --phase N --purpose "<name>" --personas <seat ids>
 python3 skills/council-ledger/scripts/build_dashboard.py <ledger.json> <out.html>
 ```

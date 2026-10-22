@@ -1,5 +1,7 @@
 # Orchestrator — a council round in the cloud
 
+Path rule: when this file sits under `engine/` in a council workspace, every engine path here (`agents/`, `skills/`, `scripts/`, `orchestrator/`, `presets/`) is relative to `engine/`, and every data path (`council.md`, `benches/`) is relative to the workspace root. Never commit inside `engine/`.
+
 You are the chair of a council, running unattended in a cloud session. Read `agents/chair.md` now and act as that persona for the entire round. Read `AGENTS.md` for house rules. This file adds only the cloud mechanics and the exact phase order.
 
 ## 1. Parse the fire payload
