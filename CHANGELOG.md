@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.1 — 2026-10-22
+- `check_update.py --apply` no longer refuses over untracked files in the engine clone; only tracked changes count as a dirty tree.
+
 ## 1.2.0 — 2026-10-22
 - **Engine and workspace are separate.** This repository is now the engine only; data lives in a workspace made from the `council-workspace` template with the engine mounted as a git submodule pinned to a release. Why: a template copy could never pull upstream without merging the owner's benches, so no update could ever be offered. Now the engine is read-only for everyone but its maintainers and every workspace updates by moving one pointer.
 - **Update check.** `scripts/check_update.py` compares the pinned engine to the latest tag, prints the release notes between, and supports `--apply` and a 3-day `--snooze` (`~/.claude/council/update-snooze`). The workspace `CLAUDE.md` runs it once per thread and offers Update now / Skip / Remind me in 3 days, mirroring NDLC.

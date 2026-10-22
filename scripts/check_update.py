@@ -89,7 +89,7 @@ def main():
         SNOOZE.write_text(f"{until} {new}\n")
         print(json.dumps({"status": "snoozed", "until": until, "latest": new})); print(f"snoozed until {until}"); return 0
     if args.apply:
-        if sh(["git", "status", "--porcelain"], engine).stdout.strip():
+        if sh(["git", "status", "--porcelain", "--untracked-files=no"], engine).stdout.strip():
             print(json.dumps({"status": "error", "reason": "engine clone has local changes; not updating over a dirty tree"})); return 1
         r = sh(["git", "checkout", "--quiet", latest], engine)
         if r.returncode != 0:
