@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.2.2 — 2026-10-22
+- The update prompt now shows the release notes between your version and the latest; it was reading the changelog from the wrong ref.
+
 ## 1.2.1 — 2026-10-22
 - `check_update.py --apply` no longer refuses over untracked files in the engine clone; only tracked changes count as a dirty tree.
 

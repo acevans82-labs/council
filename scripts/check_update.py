@@ -51,9 +51,9 @@ def latest_tag(engine):
     return (tags[-1] if tags else None), None
 
 
-def notes_between(engine, cur, new):
-    """CHANGELOG sections for versions > cur and <= new, from origin's copy of the latest tag."""
-    r = sh(["git", "show", f"{new}:CHANGELOG.md"], engine)
+def notes_between(engine, cur, new, tag):
+    """CHANGELOG sections for versions > cur and <= new, read from the latest tag."""
+    r = sh(["git", "show", f"{tag}:CHANGELOG.md"], engine)
     if r.returncode != 0:
         return ""
     out, keep = [], False
@@ -106,7 +106,7 @@ def main():
                 print(json.dumps({"status": "snoozed", "current": cur, "latest": new, "until": until})); print(f"council engine {new} available (snoozed until {until})"); return 0
         except Exception:
             pass
-    notes = notes_between(engine, cur, new)
+    notes = notes_between(engine, cur, new, latest)
     print(json.dumps({"status": "available", "current": cur, "latest": new}))
     print(f"Council engine {new} is available (you have {cur}).")
     if notes:
