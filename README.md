@@ -20,13 +20,18 @@ This repository is the **engine**: personas, skills, commands, scripts, orchestr
 Python 3.9+ is the only requirement; the scripts use the standard library.
 
 ## Staying current
-When a new engine release exists, the next thread you open in your workspace says so, shows the release notes, and offers **Update now**, **Skip** or **Remind me in 3 days**. Updating moves the `engine/` pointer; your benches are never touched. By hand: `python3 engine/scripts/check_update.py --apply`.
+The first turn of every new thread in your workspace runs the doctor's quick check. When a new engine release exists, it says so, shows the release notes, and offers **Update now**, **Skip** or **Remind me in 3 days**. Updating moves the `engine/` pointer; your benches are never touched. By hand: `python3 engine/scripts/check_update.py --apply`.
 
 ## What a round produces
 - **A score** (0–100 with a confidence band) against the question your bench asks, with the three findings that moved it.
 - **An assessment** in a neutral voice you could forward unedited.
 - **A dashboard**: one HTML file with an executive view, a narrative view and an audit view where every ID clicks through to its evidence.
 - **What the council needs from you**: numbered, tiered 0–3, the seed of the next round.
+- **The ledger** itself, delivered with the dashboard at every close.
+- **A cost receipt**: what the plan estimated, what the run measured, by phase, and why any phase went over.
+
+## Budget first
+Before any round spends anything, the council asks your dollar ceiling, proposes the seats and a model per seat (the chair and the evidence auditor on the strongest model, research seats on Opus, bounded seats on Sonnet, helpers on Sonnet or Haiku), estimates the cost from measured figures, and shows you one screen: the job, the deliverables, the cost. Nothing runs until you say go (`skills/run-planning`). If a run stalls on your account's spend limit, the council says so in plain words and tells you how to resume.
 
 `docs/how-a-round-works.md` walks through the ten steps in plain language.
 
@@ -66,7 +71,7 @@ More presets are welcome by pull request. A preset is a `bench.md` and a folder 
 ## Commands
 | Command | Does |
 | --- | --- |
-| `/council-setup` | first run: who you are, your hats, the first bench, cloud or not |
+| `/council-setup` | first run: who you are, your hats, the first bench, and the cloud routine |
 | `/council-bench new \| switch \| list \| edit` | one bench per hat |
 | `/council-seat add \| remove \| edit \| list \| library` | one file per seat |
 | `/council-consult <question> [quick\|standard\|deep]` | a cited memo in minutes, or a scored round at the deeper settings |
@@ -74,10 +79,11 @@ More presets are welcome by pull request. A preset is a `bench.md` and a folder 
 | `/council-round <effort> [standard\|deep]` | the next round: answers, what changed, what moved |
 | `/council-watch on\|off\|edit\|status\|brief <effort>` | standing research between rounds |
 | `/council-status` | every bench and effort, open requests first |
-| `/council-doctor` | checks the workspace and fixes what it can |
+| `/council-doctor` | checks the workspace, the engine version and the cloud routines, and fixes what it can |
+| `/council-swap` | hands the home thread to a fresh thread with everything live, when this one gets long |
 
 ## Local or cloud
-Locally, the chair dispatches every seat as a subagent in your session and you wait. In the cloud, a Claude Code routine runs the whole round unattended and opens a pull request with the score, the verdict and the requests list. Cloud is the better home for a council once you have more than one effort going; `docs/cloud-setup.md` takes about ten minutes.
+Locally, the chair dispatches every seat as a subagent in your session and you wait. In the cloud, a Claude Code routine runs the whole round unattended and opens a pull request with the score, the verdict and the requests list. Cloud is the better home for a council; `/council-setup` creates the routine (on an environment with Full network access, carrying your connectors), and `docs/cloud-setup.md` explains it by hand along with what the cloud cannot do. Intake and planning always happen in your local thread, where the council may also use the browser for sources only your logins reach.
 
 ## How it is built
 ```
@@ -91,7 +97,7 @@ agents/                       persona charters, _template.md
 skills/                       the rules: protocols, evidence ledger, retrieval, conflicts, rebuttal, scoring, outputs, dashboard, intake, bench design, seat authoring, convening (depth), standing watch
 commands/                     the slash commands
 orchestrator/                 orchestrate.md (a round in the cloud), watch.md (the scheduled watch)
-scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py, build_effort_index.py, check_update.py
+scripts/                      merge_ledger.py (deterministic merge of seat files into the ledger), doctor.py, build_effort_index.py, check_update.py, cost_report.py (the cost receipt)
 templates/workspace/          the files a workspace is born with (CLAUDE.md, AGENTS.md, README, .gitignore)
 docs/suite-integration.md     how the council will plug into BDLC and NDLC (planned, not wired)
 skills/council-ledger/        build_dashboard.py and the HTML template

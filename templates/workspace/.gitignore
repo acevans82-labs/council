@@ -3,5 +3,8 @@ __pycache__/
 .DS_Store
 *.tmp
 
+# Thread handoffs written by the thread swap when no session tool is available
+.council/
+
 # Effort material you choose not to commit (uncomment to keep documents local)
 # benches/*/efforts/*/documents/

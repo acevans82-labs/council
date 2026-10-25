@@ -22,7 +22,7 @@ Never read another effort's folder, and never another bench's.
 Before searching, write down (in your working notes, not the ledger) what you expect to find and where. This is what makes gaps detectable: anything expected and not found becomes a `G-` record.
 
 ## 3. Retrieve
-Follow `skills/exhaustive-retrieval`. Supplied documents and the principal's own answers first, then primary public sources, then third party. Record every fact as an `E-` record as you go. Write a `G-` record for every should-exist source you could not find.
+Stay within the search budget the chair gave you (default 40 web searches) and the helper rule (at most two helpers, on `sonnet` or `haiku`, for counting, page reading or listing sources; you write your own file). Follow `skills/exhaustive-retrieval`. Supplied documents and the principal's own answers first, then primary public sources, then third party. Record every fact as an `E-` record as you go. Write a `G-` record for every should-exist source you could not find.
 
 ## 4. Write findings
 `F-` records with `confidence`, `evidence_strength`, `evidence_ids`, `status` per the headline threshold, `so_what`, and `driver` (which of the bench's score drivers this most affects). Stakeholders add `question`. Contest an existing finding by appending to its `contested_by`; if the evidence conflicts, write a `C-` record per `skills/conflict-register`.

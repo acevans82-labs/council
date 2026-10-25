@@ -64,6 +64,9 @@ Add `materials_gate: hard` to the frontmatter when a convening must not proceed 
 ## Depth profiles
 Defaults live in `skills/convening`. A bench that needs different cells writes only those under `## Depth profiles` as `profile.lever: value` lines (for example `standard.lookback_months: 120`, `deep.max_depth: standard`, `deep.chair_model: <id>`).
 
+## Model plan (default)
+Optional. A `## Model plan` section in `bench.md` holds the bench's default plan table in the `skills/run-planning` shape (no `ceiling`, no `approved:`). Run planning starts from it instead of the generic ladder, and a convening fired by the standing watch runs on it unattended. Write it once the bench has run a round or two and its measured costs are known.
+
 ## Assessment outline
 Name the subject sections the assessment writes after the score (three to five), in order, and the stakeholder order. For a company: industry standing; competitive positioning and value proposition; operating strengths and weaknesses. For an idea: problem and demand; solution and differentiation; timing and economics. For a decision: the options; the evidence; the costs and reversibility; the people affected.
 
@@ -116,6 +119,9 @@ deep: …
 
 ## Depth profiles
 (optional; only the cells that differ from skills/convening)
+
+## Model plan
+(optional; the bench's default plan table per skills/run-planning)
 
 ## Primary sources in this field
 What counts as T2 here; the registers, regulators, journals and databases a persona should check first.

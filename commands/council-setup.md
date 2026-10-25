@@ -1,5 +1,5 @@
 ---
-description: First-run setup for the council. Checks the tools, learns who the principal is and which hats they wear, writes council.md, builds the first bench from a preset or from scratch, and offers to wire the cloud routine. Safe to re-run; it never overwrites a bench.
+description: First-run setup for the council. Checks the tools, learns who the principal is and which hats they wear, writes council.md, builds the first bench from a preset or from scratch, and creates the cloud routine (on an environment with Full network, with the GitHub app and the account's connectors) by default. Safe to re-run; it never overwrites a bench or a routine.
 argument-hint: [nothing, or a few words about who you are]
 ---
 
@@ -25,9 +25,12 @@ Work through these in order. Skip anything that is already done; say so in a lin
    ## Cloud
    routine: not set up
    watch_routine: not set up
+   environment: not set up
+   github_app: not checked
+   connectors: not checked
    ```
 3. **The first bench.** Pick the hat they want first and run the bench-design interview from `skills/bench-design` (offer the matching presets from `presets/`; a preset is copied to `benches/<slug>/` and then adjusted). Write `bench.md`, `seats/` and `context/` (ask for whatever already exists that every convening should know: an overview, a strategy, a glossary; drop it in and list the rest in `context/README.md`), add the row to `council.md`, set `active_bench`. Run `python3 scripts/doctor.py` and fix what it reports.
-4. **Cloud mode.** Explain in three lines: a round can run here in this session (fine for a first effort; takes a while and the laptop stays open) or as a cloud routine that runs unattended and delivers a pull request. If they want cloud, follow `docs/cloud-setup.md` with them now and record `routine: council-<repo>` under `## Cloud` in `council.md`; otherwise leave `routine: not set up` and move on.
+4. **Cloud routines (the default).** Say in two lines: rounds run best as a cloud routine that works unattended for hours and delivers a pull request; planning and intake always stay here in this thread. Then follow `skills/cloud-routines` with them: preflight (workspace on GitHub, the Claude GitHub app on its owner, an environment with **Full** network access, created or chosen, browser-assisted where a page must be filled), create the round routine through `RemoteTrigger`, and the watch routine too if any effort will be watched. Each account change is a button the principal clicks. Then check the routine carries the connectors this session has and report any gap in plain words. Record `routine:`, `watch_routine:`, `environment:`, `github_app:` and `connectors:` under `## Cloud` in `council.md`. If the session has no `RemoteTrigger` tool, walk the principal through `docs/cloud-setup.md` instead. If they decline cloud, leave `routine: not set up`; rounds will run here.
 5. **Close.** Tell them the roster of the first bench in one compact table and the question it answers in one line. Then offer: "Start the first effort with /council-run <name of the thing>", "Add another bench with /council-bench new", or "Change a seat with /council-seat".
 
 Never invent a hat, a field or a seat the principal did not describe. Never overwrite an existing bench; `/council-bench edit` does that on purpose.

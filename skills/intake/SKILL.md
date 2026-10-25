@@ -80,4 +80,11 @@ round_number, round_id, date, depth, materials gate result, trigger, prior-round
 ## Round N answers   (one section per later round, newest last)
 J-012: [answer] · G-004: [answer] · …
 ```
-Then tell the principal intake is complete in one line and hand off to the chair, or to the cloud routine when the round runs there.
+Then tell the principal intake is complete in one line and run `skills/run-planning` in the same thread: the ceiling, the model plan, the estimate, the one-screen summary, and the principal's go. Only after the go does the chair start, or the cloud routine get fired.
+
+## Principal-side evidence in the local thread
+Intake and planning happen in the local thread, where the session may have browser tools the cloud does not: the app's built-in browser pane, and Claude in Chrome (the principal's own Chrome, with their logged-in sessions). Use them, with the principal's say-so, to gather what only the principal's side can reach before the round is fired: a LinkedIn or Instagram profile, a members-only register, a portal behind the principal's login, a page the cloud cannot open. Save what was read as a dated document in `documents/` (source URL, date, what was captured), register it in `documents/index.md` as principal-supplied material, and the round treats it as T1. Rules:
+- **People: public and professional capacity only.** Role, tenure, employer, public statements, published work, company filings, what the person posts in a professional capacity. Never home addresses, family, health, private accounts or anything posted to a private audience, even when the principal's login could see it.
+- Read only; never post, message, follow, connect, like or accept anything from the principal's accounts.
+- Prefer the built-in browser for public pages; use Claude in Chrome only where the principal's login is the point, and say which in one line before opening it.
+- Never enter credentials yourself; if a sign-in is needed, the principal does it.
