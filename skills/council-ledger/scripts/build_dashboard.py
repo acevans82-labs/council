@@ -2,6 +2,7 @@
 """Build the council ledger dashboard from ledger.json.
 
 Usage: build_dashboard.py <ledger.json> <output.html> [--prior <prior-ledger.json>]
+                          [--artifact <artifact.html>] [--redact]
 
 Reads the ledger, validates the fields the dashboard depends on, injects the JSON
 into the template at the /*__LEDGER__*/ marker, and writes a standalone HTML file.
@@ -9,9 +10,19 @@ With --prior, also computes what changed since the prior round (score and driver
 deltas, requests answered, gaps closed, conflicts resolved, carried records that
 changed, and what is new) and injects it as CHANGES so the dashboard can show,
 hide and link the differences.
+
+With --artifact, also writes the variant published as a claude.ai Artifact: the
+same page without the doctype, html, head and body wrappers or the charset and
+viewport metas (the Artifact skeleton adds them), titled after the effort and
+round ("Acme Round 2 Ledger"). It first scans the embedded data for personal
+contact details (email addresses on personal mail domains, and phone numbers)
+and lists them; business contacts are fine to publish. --redact replaces every
+flagged item in the Artifact variant (the file version is unchanged). Exit 0, or
+2 when the Artifact variant was written with flagged items left in.
 """
 import argparse
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -133,11 +144,50 @@ def validate(ledger: dict) -> None:
             warn(f"headline {f.get('id')} has no so_what")
 
 
+PERSONAL_MAIL = r"gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|icloud|me|mac|aol|proton|protonmail|pm|gmx|web|mail|yandex|zoho|fastmail|hey"
+EMAIL = re.compile(r"[\w.+-]+@([\w-]+)\.[\w.-]+")
+PHONE = re.compile(r"(?<![\w-])(?:\+\d{1,3}[\s.-]?(?:\(?\d{1,4}\)?[\s.-]?){2,5}\d{2,4}|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})(?![\w-])")
+
+
+def personal_hits(text: str) -> list:
+    hits = []
+    for m in EMAIL.finditer(text):
+        if re.fullmatch(PERSONAL_MAIL, m.group(1).lower()):
+            hits.append(("email", m.group(0)))
+    for m in PHONE.finditer(text):
+        if sum(c.isdigit() for c in m.group(0)) >= 9:
+            hits.append(("phone", m.group(0).strip()))
+    seen, out = set(), []
+    for h in hits:
+        if h[1] not in seen:
+            seen.add(h[1])
+            out.append(h)
+    return out
+
+
+def artifact_variant(html: str, ledger: dict, hits: list, redact: bool) -> str:
+    eff = ledger.get("effort", {})
+    name = eff.get("name") or eff.get("slug", "Council").replace("-", " ").title()
+    n = eff.get("round_number")
+    title = f"{name} Round {n} Ledger" if n else f"{name} Ledger"
+    title = title.replace("&", "&amp;").replace("<", "&lt;")
+    out = re.sub(r"(?is)<!doctype[^>]*>", "", html)
+    out = re.sub(r"(?is)</?html[^>]*>|</?head>|</?body[^>]*>", "", out)
+    out = re.sub(r"(?is)<meta\s+charset[^>]*>|<meta\s+name=\"viewport\"[^>]*>", "", out)
+    out = re.sub(r"(?is)<title>.*?</title>", f"<title>{title}</title>", out, count=1)
+    if redact:
+        for kind, val in hits:
+            out = out.replace(val, f"[{kind} removed]")
+    return out.strip() + "\n"
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("ledger")
     ap.add_argument("output")
     ap.add_argument("--prior", help="the prior round's ledger.json, to compute what changed")
+    ap.add_argument("--artifact", help="also write the variant to publish as a claude.ai Artifact")
+    ap.add_argument("--redact", action="store_true", help="remove flagged personal contact details from the Artifact variant")
     args = ap.parse_args()
     src, out = Path(args.ledger), Path(args.output)
     ledger = json.loads(src.read_text())
@@ -161,6 +211,17 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html)
     print(f"wrote {out} ({len(html)//1024} KB)")
+    if args.artifact:
+        hits = personal_hits(payload + cpayload)
+        art = Path(args.artifact)
+        art.parent.mkdir(parents=True, exist_ok=True)
+        art.write_text(artifact_variant(html, ledger, hits, args.redact))
+        print(f"wrote {art} (Artifact variant)")
+        for kind, val in hits:
+            print(f"review before publishing: personal {kind} {val}" + (" (removed)" if args.redact else ""))
+        if hits and not args.redact:
+            print("If any of these are personal (not business contacts), rerun with --redact before publishing.")
+            return 2
     return 0
 
 
