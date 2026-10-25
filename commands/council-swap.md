@@ -1,5 +1,5 @@
 ---
-description: Hand the council's home thread to a fresh thread with the full live state (active effort, round, phase, open asks, pending decisions, running cloud sessions), so nothing is lost and the old thread can be archived. Use when the thread is long, slow, or its context is filling.
+description: Hand the council's home thread to a fresh thread with the full live state (active effort, round, phase, open asks, pending decisions, running cloud sessions), so nothing is lost and the old thread can be archived. Use when the thread is long, slow, or its context is filling; the home thread also offers it on its own at 60 percent context and recommends it at 80 percent.
 argument-hint: [nothing]
 ---
 

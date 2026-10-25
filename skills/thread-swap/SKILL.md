@@ -1,6 +1,6 @@
 ---
 name: thread-swap
-description: "Hand the council's home thread to a fresh thread mid-flight, with the full live state, so nothing is lost and the old thread can be archived. Watches for a home thread getting too full (long, slow, compacted, context filling) and suggests the swap at a safe moment. Use when the principal says 'swap threads', 'new home thread', 'this thread is too long', 'start fresh on this', 'pass the baton', or when the thread itself notices it is full."
+description: "Hand the council's home thread to a fresh thread mid-flight, with the full live state, so nothing is lost and the old thread can be archived. Reads how full the thread's context window is at every safe moment and suggests a one-click swap at 60 percent, recommends it at 80 percent, and also watches for other signs of a full thread (compacted, slow, re-reading). Use when the principal says 'swap threads', 'new home thread', 'this thread is too long', 'start fresh on this', 'pass the baton', or when the thread itself notices it is full."
 ---
 
 # thread-swap
@@ -10,13 +10,21 @@ The council's **home thread** is the local conversation where the principal plan
 Mirrors NDLC's `ndlc-swap-thread`, cut down to what a council needs.
 
 ## When to suggest it
-The home thread watches itself and **offers** a swap (one line and two buttons, **Swap now** / **Keep going**) when any of these is true:
+At every seam (below), the home thread reads how full its context window is. In Claude Desktop that is `get_usage` (session `self`): `context.percentUsed`, with `autoCompactsAtPercent` for where the app would start summarizing. Then:
+
+| Context used | What the thread does |
+| --- | --- |
+| under 60% | nothing (unless a sign below applies) |
+| 60% or more | **offers** the swap: one line ("This thread is 62% full; a fresh one would be faster") and two buttons, **Swap now** / **Keep going** |
+| 80% or more | **recommends** it: **Swap now (Recommended)** / **Keep going**, and does not start a new round, plan or long answers session in this thread until the principal chooses |
+
+Without a usage tool (another host, or the reading comes back unavailable), fall back to the signs. Either way, it also offers the swap when any of these is true:
 - the conversation has already been summarized once to make room;
 - it has carried two or more rounds, or one round plus a long planning or answers session;
 - replies have become slow, or the thread catches itself re-reading files it read earlier for the same purpose;
 - the principal says it feels long or slow.
 
-Offer only at a seam: after a round closes, after a plan is approved and the routine fired, after the principal's answers are written into the brief. Never in the middle of dispatching seats or merging a phase: finish the phase first. Offer at most once per seam; "Keep going" is respected until the next seam.
+Offer only at a seam: after a round closes, after a plan is approved and the routine fired, after the principal's answers are written into the brief, after a consult memo is delivered, and at the first turn of a thread that was resumed. Never in the middle of dispatching seats or merging a phase: finish the phase first. Offer at most once per seam. "Keep going" at the 60% offer is respected until the thread crosses 80%; "Keep going" at 80% is respected until the next seam, where it is recommended again.
 
 ## 1. Name the role
 The successor carries exactly this thread's role, never the next one. Usually: "council home for <workspace>" with the active bench and effort. If the thread did several things, ask which role the successor carries.

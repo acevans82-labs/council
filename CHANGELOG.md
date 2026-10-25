@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.3.1 — 2026-10-24
+- **Thread swap at 60 and 80 percent.** At every safe moment the home thread reads how full its context window is. At 60 percent it offers a one-click swap to a fresh thread; at 80 percent it recommends it and starts no new round in the old thread until the principal chooses. Why: a full thread slows down and loses detail when the app summarizes it, and the thread can now see that coming instead of guessing.
+- **Account headroom on the budget screen.** Run planning reads the account's limits: which models' weekly allowances are used up, and how much extra usage is left under the monthly limit. If a run would hit that limit partway through, the plan says so before the go, with the choices (raise the limit, move seats to another model, go lighter, or wait for the reset). Why: a round that reaches the spend limit stops silently in the cloud.
+- The cloud routine's connector check matches connectors by id, not name, and ignores local-only tools.
+- Workspace template 1.3.1: the home-thread paragraph names the 60 and 80 percent rule. The doctor offers to copy it over after the update.
+
 ## 1.3.0 — 2026-10-24
 Lessons from the first cloud rounds, built into the engine.
 - **Budget first.** Every standard or deep run (and any consult with more than three seats) is planned with the principal before anything is spent: a dollar ceiling, the seats, a model per seat with one line of why, an estimate from measured costs, and a one-screen summary of the job and what it delivers. Nothing is dispatched until the principal says go (`skills/run-planning`). The plan is written into the brief as a `### Model plan` table, and the chair sends each seat out on the model it names. Why: a deep round can cost $90 or $500 depending on the models, and the principal should choose that, not discover it.
