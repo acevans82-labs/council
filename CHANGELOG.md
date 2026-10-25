@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.2 — 2026-10-25
+- **The dashboard is published as a page, every time.** Every round close, and every consult that builds a dashboard, now delivers the dashboard twice: as a published claude.ai page (a link in the reply and in the pull request) and as the HTML file. `build_dashboard.py --artifact` writes the page version with a specific title ("Acme Round 2 Ledger") and a layout that fits a phone. Before anything is published, it lists personal emails and phone numbers for review, and `--redact` removes them. In the cloud, where publishing is not available, the local thread publishes the page when the round lands. Why: the page opens anywhere with one tap, and the file stays as the record.
+- The dashboard fits phone width (narrow-screen layout for the header and the numbers strip).
+
 ## 1.3.1 — 2026-10-24
 - **Thread swap at 60 and 80 percent.** At every safe moment the home thread reads how full its context window is. At 60 percent it offers a one-click swap to a fresh thread; at 80 percent it recommends it and starts no new round in the old thread until the principal chooses. Why: a full thread slows down and loses detail when the app summarizes it, and the thread can now see that coming instead of guessing.
 - **Account headroom on the budget screen.** Run planning reads the account's limits: which models' weekly allowances are used up, and how much extra usage is left under the monthly limit. If a run would hit that limit partway through, the plan says so before the go, with the choices (raise the limit, move seats to another model, go lighter, or wait for the reset). Why: a round that reaches the spend limit stops silently in the cloud.

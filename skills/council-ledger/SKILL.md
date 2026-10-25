@@ -62,6 +62,8 @@ python3 scripts/build_effort_index.py benches/<bench>/efforts/<effort>
 Standalone HTML, no dependencies beyond web fonts with system fallbacks. Send the round's dashboard to the principal; the index is the place to find every earlier one.
 
 ## Dashboards on demand: history and changes
+Add `--artifact <path>` to also write the variant published as a claude.ai Artifact (no document wrapper, a specific title, phone-width layout, a scan for personal contact details; `--redact` removes them). `skills/round-close` publishes it at every close.
+
 Every round keeps its own dashboard under `dashboards/`; nothing is overwritten. With `--prior`, the builder computes the change set and the dashboard gets:
 - a **Changes** toggle in the header (on by default) that shows or hides everything below;
 - a **What changed** block at the top of the executive and narrative views: score and band movement, drivers that moved, requests answered, gaps closed, conflicts resolved, headlines demoted, counts of new and changed records, and a link to the prior round's dashboard;
