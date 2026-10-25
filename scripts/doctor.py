@@ -3,10 +3,19 @@
 
 Usage: doctor.py [--quick] [--root DIR] [--presets]
 
-Checks the engine files, council.md, every bench (bench.md, seats/, roster table,
-driver weights) and every effort (brief, ledger, score history). Prints one line
-per problem and exits 1 if any ERROR was found, 0 otherwise. --quick checks only
-the engine and council.md. Stdlib only.
+Checks the engine version against the latest release, the engine files, the
+workspace CLAUDE.md and AGENTS.md against templates/workspace, council.md
+(including the ## Cloud records: routine, environment with Full network, GitHub
+app, connectors), every bench (bench.md, seats/ and their frontmatter, roster
+table, driver weights) and every effort (brief and its Model plan, ledger, score
+history, waiting QUESTION/BLOCKED files). Prints one line per problem.
+
+Exit 1 if any ERROR was found; else 3 if an engine update is available (the
+'update available:' line and its notes are printed first); else 0. --quick checks
+only the engine, the workspace templates and council.md: fast enough for the first
+turn of every thread. The live cloud checks (routine enabled, environment, the
+routine's connectors against the session's) need the RemoteTrigger tool and are
+run by /council-doctor per skills/cloud-routines. Stdlib only.
 
 Engine root is this script's grandparent. Workspace root is --root, else the
 current directory when it holds council.md or benches/ or an engine/ submodule,
@@ -26,13 +35,17 @@ ENGINE = [
     "skills/evidence-ledger/SKILL.md", "skills/scoring/SKILL.md",
     "skills/assessment-output/SKILL.md", "skills/intake/SKILL.md",
     "skills/bench-design/SKILL.md", "skills/seat-authoring/SKILL.md",
-    "orchestrator/orchestrate.md",
+    "orchestrator/orchestrate.md", "skills/run-planning/SKILL.md", "skills/round-close/SKILL.md",
+    "skills/thread-swap/SKILL.md", "skills/cloud-routines/SKILL.md", "scripts/cost_report.py",
+    "scripts/check_update.py", "templates/workspace/CLAUDE.md", "templates/workspace/AGENTS.md",
 ]
+MODELS = {"fable", "opus", "sonnet", "haiku", "mythos"}
 LAYERS = {"analyst", "stakeholder", "redteam"}
 RELEVANCE = {"high", "moderate", "low"}
 NOUNS = {"company", "idea", "deal", "decision", "initiative", "question"}
 
 problems = []
+update = {}
 
 
 def err(msg):
@@ -100,7 +113,12 @@ def check_engine(root):
         first = (r.stdout.splitlines() or [""])[0]
         info = json.loads(first) if first.startswith("{") else {}
         if info.get("status") == "available":
-            warn(f"engine {info.get('latest')} is available (you have {info.get('current')}); run check_update.py --apply, or --snooze")
+            update.update(info)
+            notes = [ln for ln in r.stdout.splitlines()[1:] if ln.startswith("## ") or ln.startswith("- **")]
+            print(f"update available: council engine {info.get('latest')} (you have {info.get('current')})")
+            for ln in notes[:12]:
+                print(f"  {ln}")
+            print("  options: update now (check_update.py --apply), skip, or remind me in 3 days (check_update.py --snooze)")
         elif info.get("status") == "snoozed":
             print(f"note: engine {info.get('latest')} available, snoozed until {info.get('until')}")
     except Exception:
@@ -127,12 +145,23 @@ def check_workspace(ws, engine):
         err("workspace: engine/ submodule is missing or empty; run: git submodule update --init")
     tpl = engine / "templates" / "workspace" / "CLAUDE.md"
     own = ws / "CLAUDE.md"
+    stamp = lambda t: (re.search(r"template version (\d+\.\d+\.\d+)", t) or [None, None])[1]
     if not own.exists():
         err("workspace: no CLAUDE.md; copy engine/templates/workspace/CLAUDE.md")
-    elif tpl.exists() and own.read_text(encoding="utf-8").strip() != tpl.read_text(encoding="utf-8").strip():
-        warn("workspace: CLAUDE.md differs from engine/templates/workspace/CLAUDE.md (a newer block, or a local edit); copy it over to take the update")
-    if not (ws / "AGENTS.md").exists():
+    elif tpl.exists():
+        o, t = own.read_text(encoding="utf-8"), tpl.read_text(encoding="utf-8")
+        if o.strip() != t.strip():
+            so, st = stamp(o), stamp(t)
+            if so and st and so != st:
+                warn(f"workspace: CLAUDE.md is from template {so}; the engine's is {st}. Copy engine/templates/workspace/CLAUDE.md over to take the update")
+            else:
+                warn("workspace: CLAUDE.md differs from engine/templates/workspace/CLAUDE.md (a local edit?); copy it over to match the engine")
+    tpa = engine / "templates" / "workspace" / "AGENTS.md"
+    own_a = ws / "AGENTS.md"
+    if not own_a.exists():
         warn("workspace: no AGENTS.md; cloud rounds will not know to fetch the submodule (copy engine/templates/workspace/AGENTS.md)")
+    elif tpa.exists() and not own_a.read_text(encoding="utf-8").strip().startswith(tpa.read_text(encoding="utf-8").strip()):
+        warn("workspace: AGENTS.md does not start with engine/templates/workspace/AGENTS.md (an older copy, or rules the engine now carries); copy the template over and keep workspace-only rules below its last line")
 
 
 def check_council(root):
@@ -154,7 +183,39 @@ def check_council(root):
             warn(f"council.md: bench '{s}' exists but is not in the Benches table")
         for s in sorted(listed - actual):
             warn(f"council.md: Benches table lists '{s}' but benches/{s}/bench.md is missing")
+    check_cloud(body)
     return fm
+
+
+def check_cloud(body):
+    m = re.search(r"^##\s+Cloud\s*$(.*?)(?=^##\s|\Z)", body, re.M | re.S)
+    if not m:
+        warn("council.md: no '## Cloud' section; rounds will run in the local thread (run /council-setup step 4 to create the cloud routine)")
+        return
+    lines = {}
+    for ln in m.group(1).splitlines():
+        k = re.match(r"^\s*([a-z_]+):\s*(.*)$", ln)
+        if k:
+            lines[k.group(1)] = k.group(2).strip()
+    routine = lines.get("routine", "")
+    if not routine or routine.startswith("not set up"):
+        print("note: no cloud routine recorded; rounds run in the local thread (/council-setup creates one)")
+        return
+    if not re.search(r"trig_\w+", routine):
+        warn("council.md: the cloud routine has no trigger id (trig_...) recorded; /council-doctor can look it up")
+    env = lines.get("environment", "")
+    if not env or env.startswith("not"):
+        warn("council.md: no cloud environment recorded; rounds need an environment with Full network access (skills/cloud-routines)")
+    elif not re.search(r"network\s+full", env, re.I):
+        warn(f"council.md: the cloud environment is not recorded as Full network ('{env}'); with Limited network every web page fetch fails")
+    gh = lines.get("github_app", "")
+    if not gh or gh.startswith("not"):
+        warn("council.md: the Claude GitHub app on the workspace's owner is not recorded as checked (skills/cloud-routines, preflight)")
+    con = lines.get("connectors", "")
+    if not con or con.startswith("not"):
+        print("note: the cloud routine's connectors have not been checked; run /council-doctor in a session with RemoteTrigger")
+    elif re.search(r"missing:\s*(?!none)\S", con, re.I):
+        warn(f"council.md: the cloud routine is missing connectors the local session has ({con.split('missing:')[1].strip()})")
 
 
 def check_bench(root, bench_dir, personas, is_preset=False):
@@ -203,6 +264,11 @@ def check_bench(root, bench_dir, personas, is_preset=False):
     for sf in seat_files:
         sid = sf.stem
         seat_ids.add(sid)
+        if not sf.read_text(encoding="utf-8").startswith("---"):
+            err(f"{label}/seats/{sf.name}: no frontmatter (persona, layer, relevance between --- lines)")
+            continue
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", sid):
+            warn(f"{label}/seats/{sf.name}: seat ID '{sid}' should be lowercase with hyphens (it tags every record)")
         sfm, sbody = frontmatter(sf)
         persona = sfm.get("persona")
         layer = sfm.get("layer")
@@ -252,10 +318,56 @@ def check_bench(root, bench_dir, personas, is_preset=False):
             check_effort(label, ed)
 
 
+def check_plan(elabel, brief):
+    text = brief.read_text(encoding="utf-8")
+    heads = list(re.finditer(r"^###\s+Model plan\b.*$", text, re.M))
+    if not heads:
+        return
+    body = text[heads[-1].end():]
+    nxt = re.search(r"^#{1,3}\s", body, re.M)
+    body = body[: nxt.start()] if nxt else body
+    header, rows = None, []
+    for line in body.splitlines():
+        s = line.strip()
+        if not s.startswith("|"):
+            continue
+        cells = [c.strip() for c in s.strip("|").split("|")]
+        if all(re.fullmatch(r":?-{2,}:?", c) for c in cells):
+            continue
+        if header is None:
+            header = [c.lower() for c in cells]
+        else:
+            rows.append(dict(zip(header, cells)))
+    if header is None:
+        err(f"{elabel}/brief.md: '### Model plan' has no table")
+        return
+    if "est $" not in header or not re.search(r"ceiling:", body):
+        warn(f"{elabel}/brief.md: the latest Model plan is in the old shape (no ceiling or 'est $' column); the next plan will be written in the skills/run-planning shape")
+        return
+    for r in rows:
+        model = (r.get("model") or "").lower()
+        if not any(k in model for k in MODELS) and not model.startswith("as "):
+            warn(f"{elabel}/brief.md: Model plan row '{r.get('seats', '')[:40]}' names model '{r.get('model')}' (use fable, opus, sonnet or haiku)")
+    est = re.search(r"estimate:\s*\$?([\d,.]+)", body)
+    total = sum(float(re.sub(r"[^\d.]", "", r.get("est $", "")) or 0) for r in rows)
+    if est and abs(float(est.group(1).replace(",", "")) - total) > max(5, 0.2 * total):
+        print(f"note: {elabel}/brief.md: the plan's estimate ({est.group(1)}) and its rows (${total:.0f}) differ by more than the margin")
+    if not re.search(r"approved:\s*\S", body):
+        print(f"note: {elabel}/brief.md: the latest Model plan is a draft (no 'approved:' line); nothing will be dispatched until the principal says go")
+
+
 def check_effort(label, ed):
     elabel = f"{label}/efforts/{ed.name}"
     if not (ed / "brief.md").exists():
         err(f"{elabel}: no brief.md (run intake)")
+    else:
+        check_plan(elabel, ed / "brief.md")
+    rounds = sorted((ed / "rounds").glob("*/")) if (ed / "rounds").exists() else []
+    if rounds:
+        latest = rounds[-1]
+        for name, what in (("QUESTION.md", "a question from the council"), ("BLOCKED.md", "a blocked round")):
+            if (latest / name).exists():
+                print(f"note: {elabel}/rounds/{latest.name}: {what} is waiting on the principal ({name})")
     docs = ed / "documents"
     if docs.exists() and any(p.is_file() and p.name != "index.md" for p in docs.iterdir()) and not (docs / "index.md").exists():
         warn(f"{elabel}: documents/ has files but no index.md")
@@ -332,7 +444,7 @@ def main():
         print("ok: council workspace is healthy")
     else:
         print(f"{errors} error(s), {len(problems) - errors} warning(s)")
-    return 1 if errors else 0
+    return 1 if errors else 3 if update else 0
 
 
 if __name__ == "__main__":

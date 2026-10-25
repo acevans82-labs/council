@@ -30,6 +30,7 @@ notify: pr                            # the watch brief arrives as a pull reques
 budget:
   scan_model: cheap                   # a cheaper model for the scan is fine; triage uses the session default
   max_hits_per_scan: 25
+  convene_ceiling: 25                 # dollars; the most a convening fired by this watch may spend (quick about $25, standard about $90)
 ---
 ```
 

@@ -21,8 +21,11 @@ If you believe an entity is registered, licensed, listed or published and cannot
 ## Regulated or documented domains
 If the nature of the effort implies that official documents exist (licenses, filings, registrations, approvals, published guidelines, trial registrations, accreditation), find them or record the gap. Never assume a document exists because it should.
 
+## Search budget
+Web search is capped at 200 calls per chair turn, shared by every seat launched in that turn, so every seat has a budget (the chair passes it: 40 by default, 20 for a bounded seat, 10 for a rebuttal). Search to find sources; read them with WebFetch rather than searching again. When search runs out, keep fetching URLs you already have and record the rest as gaps with where you would have looked.
+
 ## Browser
-When search cannot reach a source (form-based databases, portals behind selectors, PDF-only registers), use the browser tools available in the session. Record the URL you landed on as the locator.
+When search cannot reach a source (form-based databases, portals behind selectors, PDF-only registers), use the browser tools available in the session. Record the URL you landed on as the locator. A cloud round has no logged-in browser: sources behind a login (LinkedIn, Instagram, a members-only register) are gathered in the principal's local thread before the round is fired (`skills/intake`, principal-side evidence) or recorded as gaps with `principal_could_supply: true`. Facts about named people stay within their public and professional capacity.
 
 ## Gaps
 A gap is a source you had good reason to expect and could not find. Write `G-` with what you expected, why, where you looked, and `principal_could_supply` if the principal plausibly has it. Set `raised_to_principal: true` when the gap would change a finding's strength. Never downgrade a gap to "probably fine."

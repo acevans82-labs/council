@@ -7,6 +7,8 @@ Report council status for: $ARGUMENTS (everything if blank).
 
 Read `council.md`. For each bench (or the one named), and each effort under it (or the one named), read `ledger.json` and `score-history.json` and produce one compact table row: bench, effort, latest score ± band with the score label, movement since the prior round, last round ID and date, trigger, count of open requests to the principal, count of open gaps raised to the principal, count of unresolved conflicts. Below the table, for each effort list the open requests by ID, tier and question, one line each, Tier 0 first.
 
+If `council.md` records cloud routines and the session has `RemoteTrigger`, add one line per routine run still active (`list_runs`): which effort and round, started when, last seen when, and the round branch. Read-only.
+
 Mark the active bench. Benches with no efforts show "no efforts yet"; efforts with no ledger show "intake only".
 
 Do not dispatch any persona, retrieve anything, or change any file.

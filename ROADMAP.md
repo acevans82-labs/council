@@ -2,7 +2,7 @@
 
 What comes next for the council, in order. Each item says why it matters, what done looks like, and what is still an open question. Items move to `CHANGELOG.md` when they ship. Smaller things live in GitHub issues.
 
-Current release: 1.1 (depth profiles, materials gate, context folder, dashboard history, standing watch). Nothing below is started.
+Current release: 1.3 (run planning with budgets and a model per seat, cost receipts, thread swap, cloud routines created at setup, a doctor that checks the cloud). Unless an item says otherwise, nothing below is started.
 
 ## 0. Shake-out (before anything else)
 The 1.1 prompts have never run live. One quick consult, one standard round, one round 2 with answers, and one watch brief, each on a real effort, with every ambiguity fixed in the skills as it appears.
@@ -65,5 +65,4 @@ Item 4 is about the frameworks talking to each other. This is one level up: when
 - Ledger compaction for efforts past ten rounds (archive stale carried evidence; keep IDs stable).
 - A scheduled refresh round (cadence in `watch.md`, `on_schedule: standard`), distinct from the watch.
 - A `calc` renderer in the dashboard drawer.
-- Per-layer model names in a depth profile, honored by the chair's dispatch.
 - Preset contributions: a template PR checklist and a doctor pass for presets.

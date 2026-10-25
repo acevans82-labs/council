@@ -12,6 +12,8 @@ Open the folder in Claude Code and say **"set up my council"**. Python 3.9+ is t
 ## Every day
 - "consult the council on …" for a quick cited memo; "run the council on …" for a full round; "next round on …" to continue.
 - "watch … for me" for standing research; "status" for every bench and effort.
+- Every round starts with a plan you approve: a budget, the seats, a model each, and the cost. Every round ends with the dashboard, the ledger and a cost receipt.
+- "swap threads" when a thread gets long; a fresh one takes over with everything live.
 - Cloud rounds: `engine/docs/cloud-setup.md`.
 
 ## Updating the engine
