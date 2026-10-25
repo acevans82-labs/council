@@ -1,4 +1,4 @@
-<!-- council-workspace block, engine template version 1.3.0. The doctor diffs this file against engine/templates/workspace/CLAUDE.md and offers the update. -->
+<!-- council-workspace block, engine template version 1.3.1. The doctor diffs this file against engine/templates/workspace/CLAUDE.md and offers the update. -->
 # This is a council workspace
 
 This repository holds one person's (or one team's) **council data**: `council.md` (who the principal is, the benches, the connections, the cloud routines) and `benches/` (each hat, its seats, its context, its efforts and rounds). The **engine** that runs it, the personas, skills, commands, scripts and orchestrators, lives in the `engine/` folder, a git submodule pinned to a released version of the public council engine (github.com/acevans82-labs/council). You never edit `engine/`; you update it.
@@ -17,7 +17,7 @@ Before any council work, run `python3 engine/scripts/doctor.py --quick` once. It
 - Offline, the check is silent about updates, and so are you.
 
 ## The home thread
-The local thread is where the principal plans runs, answers requests and reads results. Intake and run planning (budget, a model per seat, the estimate, a one-screen summary, the principal's go) always happen here, never in the cloud. When a fired cloud round lands, this thread sends the dashboard and the ledger; when one goes quiet, it reads the run log and says what stopped it. When this thread gets long or slow, offer a swap to a fresh one at the next safe moment (`skills/thread-swap`).
+The local thread is where the principal plans runs, answers requests and reads results. Intake and run planning (budget, a model per seat, the estimate, a one-screen summary, the principal's go) always happen here, never in the cloud. When a fired cloud round lands, this thread sends the dashboard and the ledger; when one goes quiet, it reads the run log and says what stopped it. At every safe moment (a round closed, a plan approved and fired, answers written), read how full this thread's context is: at 60% offer a one-click swap to a fresh thread, at 80% recommend it (`skills/thread-swap`).
 
 ## Cloud rounds
 `AGENTS.md` here tells a cloud session to fetch the submodule first and then follow `engine/orchestrator/orchestrate.md` (a round) or `engine/orchestrator/watch.md` (the standing watch). The engine version a cloud round uses is the one pinned here, so updating the pointer is what moves cloud rounds forward. Routines, their environment (Full network access) and their connectors are recorded under `## Cloud` in `council.md` and checked by `/council-doctor`.

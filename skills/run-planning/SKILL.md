@@ -54,7 +54,14 @@ Before estimating, read the effort's last `assessments/<round_id>-cost.md` if on
 
 Add a 15 percent margin and round to the nearest $5. If the estimate exceeds the ceiling, say by how much and propose cuts in the order above until it fits; never silently trim.
 
-Subscriptions are not metered per token; these figures are what the same work costs at pay-per-token rates. Web-search fees and the app's own summarising are not included. If the account has a monthly spend cap, say how much of it the run would use when known.
+Subscriptions are not metered per token; these figures are what the same work costs at pay-per-token rates. Web-search fees and the app's own summarising are not included.
+
+## Headroom on the account
+Before showing the summary, read the account's limits. In Claude Desktop that is `get_usage`: `plan.windows` (the 5-hour, weekly and per-model weekly limits, percent used and reset time) and `plan.extraUsage` (whether extra usage is on, `spent` and `monthlyLimit`). What it means for the plan:
+- **A model's weekly allowance at or near 100%** (often the strongest model): seats on that model draw extra usage, which is billed in dollars. Treat the plan's estimate for those seats as real money.
+- **Extra usage headroom** is `monthlyLimit - spent`. If the plan's estimate for seats that would draw extra usage exceeds the headroom, the run will stop at the limit partway through. Say so, and offer the choices: raise the monthly limit (claude.ai/settings/usage), move seats to a model with weekly allowance left, run at a lower depth, or wait for the reset date.
+- **Extra usage off** and the strongest model's weekly allowance used up: those seats cannot run until the reset; plan them on the next model down or wait.
+If the reading is unavailable (an API key, another host), say "account limits not read" and continue.
 
 ## Search budget
 Web search is capped at 200 calls per chair turn, shared by every subagent launched in that turn. So the plan dispatches **in groups of at most three seats per turn**, and gives every seat a search budget: 40 web searches by default (a bounded seat 20, a rebuttal 10), read sources with WebFetch rather than searching again, and log the rest as gaps if search runs out. Write the group order into the plan.
@@ -95,6 +102,7 @@ Before asking for go, show one screen, plain English, no jargon:
 **Seats:** 14 of 18 (dropped: <names and why>); guest: <name, if any>
 **Models:** chair and auditor on Fable; 7 research seats on Opus; 6 bounded seats on Sonnet
 **Cost:** about $185 against a $250 ceiling (estimate from <source>)
+**Account:** Fable weekly allowance used up (resets <date>), so about $120 of this draws extra usage; $600 left of the $2,000 monthly limit
 **You will get:** the assessment, the dashboard, the ledger, the requests list for next round, and a cost receipt
 **What it will not cover:** <out of scope, one line>
 ```
